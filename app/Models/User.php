@@ -18,10 +18,16 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    protected $table = 'user';
+    protected $primaryKey = 'iduser';
+    public $timestamps = false;
+
     protected $fillable = [
-        'name',
+        'nama',
         'email',
         'password',
+        'username',
+        'role_idrole'
     ];
 
     /**
@@ -34,16 +40,17 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+     public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_idrole', 'idrole');
+    }
     /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    public function jadwals()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasMany(Jadwal::class, 'user_iduser', 'iduser');
     }
 }
