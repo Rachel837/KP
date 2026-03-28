@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.success {
+    color: #388e3c;
+    background-color: #e8f5e9;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-left: 4px solid #388e3c;
+}

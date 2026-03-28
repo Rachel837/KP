@@ -148,12 +148,7 @@
             {{-- Validasi Error dari Form --}}
             @if($errors->any())
                 <div class="error">
-                    <strong>✗ Terjadi kesalahan:</strong>
-                    <ul style="margin: 5px 0; padding-left: 20px;">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                    <strong>{{ $errors->first() }}</strong>
                 </div>
             @endif
 
@@ -170,9 +165,9 @@
                         value="{{ old('email') }}"
                         class="@error('email') error-input @enderror"
                         required>
-                    @error('email')
+                    {{-- @error('email')
                         <span class="error" style="display: block; margin-top: 5px;">{{ $message }}</span>
-                    @enderror
+                    @enderror --}}
                 </div>
 
                 <div class="input-group">

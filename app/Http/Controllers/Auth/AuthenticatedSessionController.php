@@ -31,7 +31,8 @@ class AuthenticatedSessionController extends Controller
         // Notifikasi berhasil login
         session()->flash('success', 'Selamat datang! Login berhasil.');
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('dashboard', absolute: false))
+            ->with('success', 'Selamat datang! Login berhasil.');
     }
 
     /**
