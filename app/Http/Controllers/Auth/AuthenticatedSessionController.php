@@ -31,8 +31,17 @@ class AuthenticatedSessionController extends Controller
         // Notifikasi berhasil login
         session()->flash('success', 'Selamat datang! Login berhasil.');
 
-        return redirect()->intended(route('dashboard', absolute: false))
-            ->with('success', 'Selamat datang! Login berhasil.');
+        $role = $request->user()->role->nama ?? '';
+        
+        if ($role === 'super_admin' || $role === 'admin') {
+            return redirect()->intended(route('admin.dashboard', absolute: false));
+        }
+
+        if ($role === 'koor') {
+            return redirect()->intended(route('koor.dashboard', absolute: false));
+        }
+
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**

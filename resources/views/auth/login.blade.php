@@ -161,7 +161,6 @@
                         type="text" 
                         id="username"
                         name="email" 
-                        placeholder="Karyawan" 
                         value="{{ old('email') }}"
                         class="@error('email') error-input @enderror"
                         required>

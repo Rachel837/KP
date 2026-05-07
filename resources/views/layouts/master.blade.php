@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>InApp Inventory Dashboard</title>
+  {{-- <title>InApp Inventory Dashboard</title> --}}
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/images/favicon_io/apple-touch-icon.png') }}">
   <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/favicon_io/favicon-32x32.png') }}">
@@ -19,7 +19,9 @@
 
     <div id="main-content" class="main-content">
         @include('layouts.header')
-        
+
+        {{-- @include('layouts.jadwal') --}}
+
         @yield('content')
 
         @include('layouts.footer')
