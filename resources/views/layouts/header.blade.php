@@ -77,12 +77,12 @@
             <div class="d-flex gap-3 align-items-center border-dashed border-bottom px-3 py-3">
             <img src="{{ asset('assets/images/avatar/avatar-1.jpg') }}" alt="" class="avatar avatar-md rounded-circle" />
             <div>
-                <h4 class="mb-0 small">Shrina Tesla</h4>
-                <p class="mb-0  small">@imshrina</p>
+                <h4 class="mb-0 small">{{ Auth::user()->name }}</h4>
+                <p class="mb-0  small">{{ Auth::user()->role->nama === 'koor' ? Auth::user()->email : (Auth::user()->username ? '@' . Auth::user()->username : Auth::user()->email) }}</p>
             </div>
             </div>
             <div class="p-3 d-flex flex-column gap-1 small lh-lg">
-            <a href="#!" class="">
+            <a href="{{ route('home') }}" class="">
 
                 <span>Home</span>
             </a>
@@ -98,7 +98,7 @@
 
                 <span> Activity</span>
             </a>
-            <a href="#!" class="">
+            <a href="{{ route('profile.edit') }}" class="">
 
                 <span> Account Settings</span>
             </a>

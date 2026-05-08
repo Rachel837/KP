@@ -12,11 +12,18 @@ Route::get('/', function () {
 });
 
 Route::get('/home', function () {
+    $role = auth()->user()->role->nama ?? '';
+    
+    if ($role === 'super_admin' || $role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+
+    if ($role === 'koor') {
+        return redirect()->route('koor.dashboard');
+    }
+
     return view('starter');
 })->middleware('auth')->name('home');
-
-// Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-// Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.process');
 Route::get('/login', function () {
@@ -24,6 +31,16 @@ Route::get('/login', function () {
 })->name('login');
 
 Route::get('/dashboard', function () {
+    $role = auth()->user()->role->nama ?? '';
+    
+    if ($role === 'super_admin' || $role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+
+    if ($role === 'koor') {
+        return redirect()->route('koor.dashboard');
+    }
+
     return view('starter');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -41,7 +58,9 @@ Route::middleware('auth')->group(function () {
     // Koor routes
     Route::middleware('role:koor')->prefix('koor')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Koor\DashboardController::class, 'index'])->name('koor.dashboard');
+        Route::get('/laporan-bulanan', [\App\Http\Controllers\Koor\LaporanController::class, 'bulanan'])->name('laporan.bulanan');
         Route::resource('/laporan', \App\Http\Controllers\Koor\LaporanController::class);
+        Route::resource('/users', \App\Http\Controllers\Koor\UserController::class)->names('koor.users');
     });
 });
 

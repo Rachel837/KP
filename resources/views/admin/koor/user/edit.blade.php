@@ -8,12 +8,12 @@
             <div class="col-12 col-lg-8 mx-auto">
                 <div class="mb-4">
                     <h1 class="fs-3 mb-1">Edit Pengguna</h1>
-                    <p>Ubah informasi pengguna sistem.</p>
+                    <p>Silakan perbarui informasi pengguna di bawah ini.</p>
                 </div>
 
                 <div class="card border-0 shadow-sm">
                     <div class="card-body p-4">
-                        <form action="{{ route('users.update', $user->iduser) }}" method="POST">
+                        <form action="{{ route('koor.users.update', $user->iduser) }}" method="POST">
                             @csrf
                             @method('PUT')
                             
@@ -29,36 +29,35 @@
                                 @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
 
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" name="username" value="{{ old('username', $user->username) }}" required>
-                                @error('username')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <hr class="my-4">
+                            <p class="text-muted small mb-3">Kosongkan kata sandi jika tidak ingin diubah.</p>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="password" class="form-label">Kata Sandi Baru</label>
+                                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password">
+                                    @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="password_confirmation" class="form-label">Konfirmasi Kata Sandi Baru</label>
+                                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
+                                </div>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-4">
                                 <label for="role_idrole" class="form-label">Role</label>
                                 <select class="form-select @error('role_idrole') is-invalid @enderror" id="role_idrole" name="role_idrole" required>
+                                    <option value="" disabled>Pilih Role</option>
                                     @foreach($roles as $role)
-                                        <option value="{{ $role->idrole }}" {{ (old('role_idrole', $user->role_idrole) == $role->idrole) ? 'selected' : '' }}>{{ ucwords(str_replace('_', ' ', $role->nama)) }}</option>
+                                        <option value="{{ $role->idrole }}" {{ old('role_idrole', $user->role_idrole) == $role->idrole ? 'selected' : '' }}>{{ $role->nama }}</option>
                                     @endforeach
                                 </select>
                                 @error('role_idrole')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
 
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password Baru (Biarkan kosong jika tidak diubah)</label>
-                                <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password">
-                                @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="password_confirmation" class="form-label">Konfirmasi Password Baru</label>
-                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
-                            </div>
-
                             <div class="d-flex justify-content-between">
-                                <a href="{{ route('users.index') }}" class="btn btn-secondary">Kembali</a>
-                                <button type="submit" class="btn btn-primary">Update Pengguna</button>
+                                <a href="{{ route('koor.users.index') }}" class="btn btn-secondary">Kembali</a>
+                                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                             </div>
                         </form>
                     </div>

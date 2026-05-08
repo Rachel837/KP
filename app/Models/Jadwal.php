@@ -16,12 +16,19 @@ class Jadwal extends Model
         'jam_awal',
         'jam_akhir',
         'jumlah_solar',
-        'jam_meninggal',
-        'tanggal_meninggal',
+        'lama_pembakaran',
         'user_iduser',
-        'pemakaian_listrik',
         'ruangan_id',
-        'pelanggan_kremasi_id'
+        'pelanggan_kremasi_id',
+        'nama_pelanggan',
+        'alamat',
+        'umur',
+        'foto_permohonan',
+        'foto_tiba',
+        'foto_awal',
+        'foto_akhir',
+        'foto_tulang',
+        'foto_abu'
     ];
 
     public function user()
