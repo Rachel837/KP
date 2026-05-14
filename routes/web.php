@@ -22,6 +22,10 @@ Route::get('/home', function () {
         return redirect()->route('koor.dashboard');
     }
 
+    if ($role === 'karyawan') {
+        return redirect()->route('karyawan.dashboard');
+    }
+
     return view('starter');
 })->middleware('auth')->name('home');
 
@@ -39,6 +43,10 @@ Route::get('/dashboard', function () {
 
     if ($role === 'koor') {
         return redirect()->route('koor.dashboard');
+    }
+
+    if ($role === 'karyawan') {
+        return redirect()->route('karyawan.dashboard');
     }
 
     return view('starter');
@@ -61,6 +69,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan-bulanan', [\App\Http\Controllers\Koor\LaporanController::class, 'bulanan'])->name('laporan.bulanan');
         Route::resource('/laporan', \App\Http\Controllers\Koor\LaporanController::class);
         Route::resource('/users', \App\Http\Controllers\Koor\UserController::class)->names('koor.users');
+    });
+
+    // Karyawan routes
+    Route::middleware('role:karyawan')->prefix('karyawan')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Karyawan\DashboardController::class, 'index'])->name('karyawan.dashboard');
+        Route::get('/laporan-bulanan', [\App\Http\Controllers\Karyawan\LaporanController::class, 'bulanan'])->name('karyawan.laporan.bulanan');
+        Route::resource('/laporan', \App\Http\Controllers\Karyawan\LaporanController::class)->names('karyawan.laporan');
     });
 });
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Koor;
+namespace App\Http\Controllers\Karyawan;
 
 use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
@@ -20,6 +20,6 @@ class DashboardController extends Controller
             ->orderBy('date', 'asc')
             ->get();
             
-        return view('users.koor.dashboard', compact('jadwals', 'startDate', 'endDate'));
+        return view('users.karyawan.dashboard', compact('jadwals', 'startDate', 'endDate'));
     }
 }

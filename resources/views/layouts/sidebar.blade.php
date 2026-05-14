@@ -17,6 +17,11 @@
         <li><a class="nav-link {{ request()->routeIs('laporan.create') ? 'active' : '' }}" href="{{ route('laporan.create') }}"><i class="ti ti-plus"></i><span class="nav-text">Add Laporan</span></a></li>
         <li><a class="nav-link {{ request()->routeIs('laporan.index') ? 'active' : '' }}" href="{{ route('laporan.index') }}"><i class="ti ti-receipt"></i><span class="nav-text">Laporan</span></a></li>
         <li><a class="nav-link {{ request()->routeIs('laporan.bulanan') ? 'active' : '' }}" href="{{ route('laporan.bulanan') }}"><i class="ti ti-calendar"></i><span class="nav-text">Laporan Bulanan</span></a></li>
+    @elseif(auth()->check() && auth()->user()->role->nama === 'karyawan')
+        <li><a class="nav-link {{ request()->routeIs('karyawan.dashboard') ? 'active' : '' }}" href="{{ route('karyawan.dashboard') }}"><i class="ti ti-home"></i><span class="nav-text">Dashboard</span></a></li>
+        <li><a class="nav-link {{ request()->routeIs('karyawan.laporan.create') ? 'active' : '' }}" href="{{ route('karyawan.laporan.create') }}"><i class="ti ti-plus"></i><span class="nav-text">Add Laporan</span></a></li>
+        <li><a class="nav-link {{ request()->routeIs('karyawan.laporan.index') ? 'active' : '' }}" href="{{ route('karyawan.laporan.index') }}"><i class="ti ti-receipt"></i><span class="nav-text">Laporan</span></a></li>
+        <li><a class="nav-link {{ request()->routeIs('karyawan.laporan.bulanan') ? 'active' : '' }}" href="{{ route('karyawan.laporan.bulanan') }}"><i class="ti ti-calendar"></i><span class="nav-text">Laporan Bulanan</span></a></li>
     @endif
 
     <li class="px-4 pt-4 pb-2"><small class="nav-text">Account</small></li>

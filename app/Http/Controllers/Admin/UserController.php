@@ -14,13 +14,13 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('role')->get();
-        return view('admin.users.index', compact('users'));
+        return view('users.karyawan.index', compact('users'));
     }
 
     public function create()
     {
         $roles = Role::all();
-        return view('admin.users.create', compact('roles'));
+        return view('users.karyawan.create', compact('roles'));
     }
 
     public function store(Request $request)
@@ -48,7 +48,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $roles = Role::all();
-        return view('admin.users.edit', compact('user', 'roles'));
+        return view('users.karyawan.edit', compact('user', 'roles'));
     }
 
     public function update(Request $request, $id)

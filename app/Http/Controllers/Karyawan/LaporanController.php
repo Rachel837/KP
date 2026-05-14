@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Koor;
+namespace App\Http\Controllers\Karyawan;
 
 use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
@@ -9,6 +9,7 @@ use App\Models\PelangganKremasi;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class LaporanController extends Controller
 {
@@ -26,7 +27,7 @@ class LaporanController extends Controller
                 ->get();
         }
 
-        return view('users.koor.laporan.bulanan', compact('reports', 'ruangans', 'selected_ruangan'));
+        return view('users.karyawan.laporan.bulanan', compact('reports', 'ruangans', 'selected_ruangan'));
     }
 
     public function index()
@@ -36,14 +37,14 @@ class LaporanController extends Controller
             ->get()
             ->groupBy('date');
             
-        return view('users.koor.laporan.index', compact('jadwals'));
+        return view('users.karyawan.laporan.index', compact('jadwals'));
     }
 
     public function create()
     {
         $ruangans = Ruangan::all();
         $pelanggans = PelangganKremasi::all();
-        return view('users.koor.laporan.create', compact('ruangans', 'pelanggans'));
+        return view('users.karyawan.laporan.create', compact('ruangans', 'pelanggans'));
     }
 
     public function store(Request $request)
@@ -79,7 +80,7 @@ class LaporanController extends Controller
 
         Jadwal::create($data);
 
-        return redirect()->route('laporan.index')->with('success', 'Laporan jadwal berhasil ditambahkan.');
+        return redirect()->route('karyawan.laporan.index')->with('success', 'Laporan jadwal berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -87,7 +88,7 @@ class LaporanController extends Controller
         $laporan = Jadwal::findOrFail($id);
         $ruangans = Ruangan::all();
         $pelanggans = PelangganKremasi::all();
-        return view('users.koor.laporan.edit', compact('laporan', 'ruangans', 'pelanggans'));
+        return view('users.karyawan.laporan.edit', compact('laporan', 'ruangans', 'pelanggans'));
     }
 
     public function update(Request $request, $id)
@@ -118,8 +119,8 @@ class LaporanController extends Controller
         foreach ($photoFields as $field) {
             if ($request->hasFile($field)) {
                 // Delete old file if exists
-                if ($laporan->$field && \Storage::disk('public')->exists($laporan->$field)) {
-                    \Storage::disk('public')->delete($laporan->$field);
+                if ($laporan->$field && Storage::disk('public')->exists($laporan->$field)) {
+                    Storage::disk('public')->delete($laporan->$field);
                 }
                 $data[$field] = $request->file($field)->store('laporan', 'public');
             }
@@ -127,13 +128,13 @@ class LaporanController extends Controller
 
         $laporan->update($data);
 
-        return redirect()->route('laporan.index')->with('success', 'Laporan jadwal berhasil diperbarui.');
+        return redirect()->route('karyawan.laporan.index')->with('success', 'Laporan jadwal berhasil diperbarui.');
     }
 
     public function show($id)
     {
         $laporan = Jadwal::with(['user', 'ruangan', 'pelanggan'])->findOrFail($id);
-        return view('users.koor.laporan.show', compact('laporan'));
+        return view('users.karyawan.laporan.show', compact('laporan'));
     }
 
     public function destroy($id)
@@ -141,6 +142,6 @@ class LaporanController extends Controller
         $laporan = Jadwal::findOrFail($id);
         $laporan->delete();
 
-        return redirect()->route('laporan.index')->with('success', 'Laporan jadwal berhasil dihapus.');
+        return redirect()->route('karyawan.laporan.index')->with('success', 'Laporan jadwal berhasil dihapus.');
     }
 }
