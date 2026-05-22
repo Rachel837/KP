@@ -1,8 +1,37 @@
 <!-- SIDEBAR -->
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+    
+    .brand-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        font-family: 'Outfit', sans-serif;
+    }
+    
+    .brand-logo-text {
+        font-weight: 700;
+        font-size: 1.35rem;
+        color: #2b4c6f;
+        letter-spacing: -0.5px;
+        transition: transform 0.2s ease;
+    }
+    
+    .brand-logo:hover .brand-logo-text {
+        color: #1e3550;
+    }
+    
+    .brand-logo i {
+        font-size: 1.8rem;
+        color: #d97706;
+    }
+</style>
 <aside id="sidebar" class="sidebar">
 <div class="logo-area">
-    {{-- <a href="index.html" class="d-inline-flex"><img src="{{ asset('assets/images/logo-icon.svg') }}" alt="" width="24"> --}}
-    <span class="logo-text ms-2"> <img src="{{ asset('assets/images/logo.png') }}" alt=""></span>
+    <a href="{{ url('/') }}" class="brand-logo">
+        <i class="ti ti-flame"></i>
+        <span class="brand-logo-text">Krema Track</span>
     </a>
 </div>
 <ul class="nav flex-column">
@@ -19,6 +48,7 @@
         <li><a class="nav-link {{ request()->routeIs('laporan.bulanan') ? 'active' : '' }}" href="{{ route('laporan.bulanan') }}"><i class="ti ti-calendar"></i><span class="nav-text">Laporan Bulanan</span></a></li>
     @elseif(auth()->check() && auth()->user()->role->nama === 'karyawan')
         <li><a class="nav-link {{ request()->routeIs('karyawan.dashboard') ? 'active' : '' }}" href="{{ route('karyawan.dashboard') }}"><i class="ti ti-home"></i><span class="nav-text">Dashboard</span></a></li>
+        <li><a class="nav-link {{ request()->routeIs('karyawan.jadwal.*') ? 'active' : '' }}" href="{{ route('karyawan.jadwal.index') }}"><i class="ti ti-calendar-event"></i><span class="nav-text">Jadwal</span></a></li>
         <li><a class="nav-link {{ request()->routeIs('karyawan.laporan.create') ? 'active' : '' }}" href="{{ route('karyawan.laporan.create') }}"><i class="ti ti-plus"></i><span class="nav-text">Add Laporan</span></a></li>
         <li><a class="nav-link {{ request()->routeIs('karyawan.laporan.index') ? 'active' : '' }}" href="{{ route('karyawan.laporan.index') }}"><i class="ti ti-receipt"></i><span class="nav-text">Laporan</span></a></li>
         <li><a class="nav-link {{ request()->routeIs('karyawan.laporan.bulanan') ? 'active' : '' }}" href="{{ route('karyawan.laporan.bulanan') }}"><i class="ti ti-calendar"></i><span class="nav-text">Laporan Bulanan</span></a></li>

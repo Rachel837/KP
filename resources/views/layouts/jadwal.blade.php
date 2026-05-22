@@ -29,7 +29,7 @@
 
                     {{-- Nama --}}
                     <div style="width: 50%; border-left:1px solid #999; border-right:1px solid #999; text-align:center;">
-                        {{ $item->pelanggan->nama ?? '-' }}
+                        {{ $item->nama_pelanggan ?? '-' }}
                     </div>
 
                     {{-- Mesin --}}

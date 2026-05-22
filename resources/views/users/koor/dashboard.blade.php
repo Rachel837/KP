@@ -24,7 +24,7 @@
                                         <th class="ps-4">No</th>
                                         <th>Tanggal Kremasi</th>
                                         <th>Jam Awal - Akhir</th>
-                                        <th>Pelanggan</th>
+                                        <th>Nama Almarhum</th>
                                         <th>Ruangan</th>
                                         <th class="text-end pe-4">Status</th>
                                     </tr>
@@ -35,7 +35,7 @@
                                         <td class="ps-4">{{ $index + 1 }}</td>
                                         <td>{{ \Carbon\Carbon::parse($jadwal->date)->format('d F Y') }}</td>
                                         <td>{{ $jadwal->jam_awal }} - {{ $jadwal->jam_akhir }}</td>
-                                        <td>{{ $jadwal->pelanggan->nama ?? '-' }}</td>
+                                        <td>{{ $jadwal->nama_pelanggan ?? '-' }}</td>
                                         <td>{{ $jadwal->ruangan->nama ?? '-' }}</td>
                                         <td class="text-end pe-4"><span class="badge bg-success">Terjadwal</span></td>
                                     </tr>

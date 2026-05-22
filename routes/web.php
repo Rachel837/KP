@@ -7,9 +7,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Middleware\Role;
 use App\Http\Controllers\JadwalController;
 
-Route::get('/', function () {
-    return view('auth.login');
-});
+use App\Http\Controllers\GuestDashboardController;
+
+Route::get('/', [GuestDashboardController::class, 'index'])->name('guest.dashboard');
 
 Route::get('/home', function () {
     $role = auth()->user()->role->nama ?? '';
@@ -76,6 +76,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Karyawan\DashboardController::class, 'index'])->name('karyawan.dashboard');
         Route::get('/laporan-bulanan', [\App\Http\Controllers\Karyawan\LaporanController::class, 'bulanan'])->name('karyawan.laporan.bulanan');
         Route::resource('/laporan', \App\Http\Controllers\Karyawan\LaporanController::class)->names('karyawan.laporan');
+        Route::resource('/jadwal', \App\Http\Controllers\Karyawan\JadwalController::class)->names('karyawan.jadwal');
     });
 });
 

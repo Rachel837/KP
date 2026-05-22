@@ -40,16 +40,29 @@ class LaporanController extends Controller
         return view('users.karyawan.laporan.index', compact('jadwals'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $ruangans = Ruangan::all();
         $pelanggans = PelangganKremasi::all();
-        return view('users.karyawan.laporan.create', compact('ruangans', 'pelanggans'));
+        
+        // Fetch schedules that are not yet reported (still Terjadwal)
+        $jadwals = Jadwal::whereNull('lama_pembakaran')
+            ->whereNull('foto_abu')
+            ->orderBy('date', 'desc')
+            ->get();
+
+        $selectedJadwal = null;
+        if ($request->filled('jadwal_id')) {
+            $selectedJadwal = Jadwal::find($request->jadwal_id);
+        }
+            
+        return view('users.karyawan.laporan.create', compact('ruangans', 'pelanggans', 'jadwals', 'selectedJadwal'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'jadwal_id' => 'nullable|exists:jadwal,idreports',
             'date' => 'required|date',
             'waktu_tiba' => 'required',
             'jam_awal' => 'required',
@@ -70,15 +83,27 @@ class LaporanController extends Controller
 
         $data = $request->all();
         $data['user_iduser'] = auth()->user()->iduser;
-
         $photoFields = ['foto_permohonan', 'foto_tiba', 'foto_awal', 'foto_akhir', 'foto_tulang', 'foto_abu'];
-        foreach ($photoFields as $field) {
-            if ($request->hasFile($field)) {
-                $data[$field] = $request->file($field)->store('laporan', 'public');
-            }
-        }
 
-        Jadwal::create($data);
+        if ($request->filled('jadwal_id')) {
+            $laporan = Jadwal::findOrFail($request->jadwal_id);
+            foreach ($photoFields as $field) {
+                if ($request->hasFile($field)) {
+                    if ($laporan->$field && Storage::disk('public')->exists($laporan->$field)) {
+                        Storage::disk('public')->delete($laporan->$field);
+                    }
+                    $data[$field] = $request->file($field)->store('laporan', 'public');
+                }
+            }
+            $laporan->update($data);
+        } else {
+            foreach ($photoFields as $field) {
+                if ($request->hasFile($field)) {
+                    $data[$field] = $request->file($field)->store('laporan', 'public');
+                }
+            }
+            Jadwal::create($data);
+        }
 
         return redirect()->route('karyawan.laporan.index')->with('success', 'Laporan jadwal berhasil ditambahkan.');
     }
