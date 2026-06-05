@@ -37,9 +37,6 @@ Route::get('/login', function () {
 Route::get('/dashboard', function () {
     $role = auth()->user()->role->nama ?? '';
     
-    if ($role === 'super_admin' || $role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    }
 
     if ($role === 'koor') {
         return redirect()->route('koor.dashboard');
@@ -57,11 +54,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Admin routes
-    Route::middleware('role:super_admin')->prefix('admin')->group(function () {
-        Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
-        Route::resource('/users', \App\Http\Controllers\Admin\UserController::class);
-    });
 
     // Koor routes
     Route::middleware('role:koor')->prefix('koor')->group(function () {
