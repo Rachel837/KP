@@ -14,6 +14,7 @@ class PelangganKremasi extends Model
         'nama',
         'usia',
         'penanggung_jawab',
+        'penannggung_jawab',
         'no_telepon',
         'tanggal_lahir',
         'tempat_lahir',

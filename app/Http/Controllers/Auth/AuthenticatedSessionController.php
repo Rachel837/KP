@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         if ($role === 'koor') {
-            return redirect()->intended(route('koor.dashboard', absolute: false));
+            return redirect()->intended(route('karyawan.dashboard', absolute: false));
         }
 
         if ($role === 'karyawan') {

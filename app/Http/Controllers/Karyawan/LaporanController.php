@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
 use App\Models\Ruangan;
 use App\Models\PelangganKremasi;
+use App\Models\Picture;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -13,22 +14,6 @@ use Illuminate\Support\Facades\Storage;
 
 class LaporanController extends Controller
 {
-    public function bulanan(Request $request)
-    {
-        $ruangans = Ruangan::all();
-        $selected_ruangan = null;
-        $reports = collect();
-
-        if ($request->has('ruangan_id')) {
-            $selected_ruangan = Ruangan::findOrFail($request->ruangan_id);
-            $reports = Jadwal::with(['pelanggan', 'ruangan'])
-                ->where('ruangan_id', $request->ruangan_id)
-                ->orderBy('date', 'desc')
-                ->get();
-        }
-
-        return view('users.karyawan.laporan.bulanan', compact('reports', 'ruangans', 'selected_ruangan'));
-    }
 
     public function index()
     {
@@ -67,12 +52,15 @@ class LaporanController extends Controller
             'waktu_tiba' => 'required',
             'jam_awal' => 'required',
             'jam_akhir' => 'required',
-            'jumlah_solar' => 'nullable|numeric',
-            'lama_pembakaran' => 'nullable|string|max:100',
+            'jumlah_solar' => 'required|numeric|min:0',
             'ruangan_id' => 'required|exists:ruangan,id',
-            'nama_pelanggan' => 'required|string|max:255',
+            'nama_penanggung_jawab' => 'required|string|max:255',
+            'no_telepon_penanggung_jawab' => 'required|string|max:255',
+            'tanggal_lahir_jenazah' => 'required|date',
+            'tempat_lahir_jenazah' => 'required|string|max:255',
+            'nama_jenazah' => 'required|string|max:255',
+            'usia_jenazah' => 'required|integer|min:0',
             'alamat' => 'nullable|string|max:255',
-            'umur' => 'nullable|string|max:50',
             'foto_permohonan' => 'nullable|image|max:2048',
             'foto_tiba' => 'nullable|image|max:2048',
             'foto_awal' => 'nullable|image|max:2048',
@@ -81,28 +69,110 @@ class LaporanController extends Controller
             'foto_abu' => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->all();
-        $data['user_iduser'] = auth()->user()->iduser;
         $photoFields = ['foto_permohonan', 'foto_tiba', 'foto_awal', 'foto_akhir', 'foto_tulang', 'foto_abu'];
 
         if ($request->filled('jadwal_id')) {
             $laporan = Jadwal::findOrFail($request->jadwal_id);
+
+            // Update or create PelangganKremasi record
+            $pelangganId = $laporan->{'pelanggan kremasi_id'} ?? $laporan->pelanggan_kremasi_id;
+            $pelanggan = null;
+            if ($pelangganId) {
+                $pelanggan = PelangganKremasi::find($pelangganId);
+            }
+
+            if ($pelanggan) {
+                $pelanggan->update([
+                    'nama' => $request->nama_jenazah,
+                    'usia' => $request->usia_jenazah,
+                    'penannggung_jawab' => $request->nama_penanggung_jawab,
+                    'no_telepon' => $request->no_telepon_penanggung_jawab,
+                    'tanggal_lahir' => $request->tanggal_lahir_jenazah,
+                    'tempat_lahir' => $request->tempat_lahir_jenazah,
+                ]);
+            } else {
+                $pelanggan = PelangganKremasi::create([
+                    'nama' => $request->nama_jenazah,
+                    'usia' => $request->usia_jenazah,
+                    'penannggung_jawab' => $request->nama_penanggung_jawab,
+                    'no_telepon' => $request->no_telepon_penanggung_jawab,
+                    'tanggal_lahir' => $request->tanggal_lahir_jenazah,
+                    'tempat_lahir' => $request->tempat_lahir_jenazah,
+                ]);
+            }
+
+            // Calculate lama_pembakaran (jam_akhir - jam_awal in minutes)
+            $jamAwal = Carbon::parse($request->jam_awal);
+            $jamAkhir = Carbon::parse($request->jam_akhir);
+            $diffInMinutes = $jamAwal->diffInMinutes($jamAkhir);
+
+            $data = $request->only(['date', 'waktu_tiba', 'jam_awal', 'jam_akhir', 'jumlah_solar', 'ruangan_id', 'alamat']);
+            $data['pelanggan kremasi_id'] = $pelanggan->id;
+            $data['nama_pelanggan'] = $pelanggan->nama;
+            $data['umur'] = $pelanggan->usia;
+            $data['lama_pembakaran'] = $diffInMinutes;
+
             foreach ($photoFields as $field) {
                 if ($request->hasFile($field)) {
-                    if ($laporan->$field && Storage::disk('public')->exists($laporan->$field)) {
-                        Storage::disk('public')->delete($laporan->$field);
+                    if ($laporan->$field) {
+                        if (Storage::disk('public')->exists($laporan->$field)) {
+                            Storage::disk('public')->delete($laporan->$field);
+                        }
+                        Picture::where('filepath', $laporan->$field)
+                            ->where('reports_idreports', $laporan->idreports)
+                            ->delete();
                     }
-                    $data[$field] = $request->file($field)->store('laporan', 'public');
+                    $storedPath = $request->file($field)->store('laporan', 'public');
+                    $data[$field] = $storedPath;
+
+                    Picture::create([
+                        'filepath' => $storedPath,
+                        'reports_idreports' => $laporan->idreports,
+                    ]);
                 }
             }
+
             $laporan->update($data);
         } else {
+            // Manual input / new schedule created from reports
+            $pelanggan = PelangganKremasi::create([
+                'nama' => $request->nama_jenazah,
+                'usia' => $request->usia_jenazah,
+                'penannggung_jawab' => $request->nama_penanggung_jawab,
+                'no_telepon' => $request->no_telepon_penanggung_jawab,
+                'tanggal_lahir' => $request->tanggal_lahir_jenazah,
+                'tempat_lahir' => $request->tempat_lahir_jenazah,
+            ]);
+
+            // Calculate lama_pembakaran
+            $jamAwal = Carbon::parse($request->jam_awal);
+            $jamAkhir = Carbon::parse($request->jam_akhir);
+            $diffInMinutes = $jamAwal->diffInMinutes($jamAkhir);
+
+            $data = $request->only(['date', 'waktu_tiba', 'jam_awal', 'jam_akhir', 'jumlah_solar', 'ruangan_id', 'alamat']);
+            $data['pelanggan kremasi_id'] = $pelanggan->id;
+            $data['nama_pelanggan'] = $pelanggan->nama;
+            $data['umur'] = $pelanggan->usia;
+            $data['lama_pembakaran'] = $diffInMinutes;
+            $data['user_iduser'] = auth()->user()->iduser;
+
             foreach ($photoFields as $field) {
                 if ($request->hasFile($field)) {
                     $data[$field] = $request->file($field)->store('laporan', 'public');
                 }
             }
-            Jadwal::create($data);
+
+            $laporan = Jadwal::create($data);
+
+            // Store uploaded photos to pictures table
+            foreach ($photoFields as $field) {
+                if (isset($data[$field])) {
+                    Picture::create([
+                        'filepath' => $data[$field],
+                        'reports_idreports' => $laporan->idreports,
+                    ]);
+                }
+            }
         }
 
         return redirect()->route('karyawan.laporan.index')->with('success', 'Laporan jadwal berhasil ditambahkan.');
@@ -123,12 +193,15 @@ class LaporanController extends Controller
             'waktu_tiba' => 'required',
             'jam_awal' => 'required',
             'jam_akhir' => 'required',
-            'jumlah_solar' => 'nullable|numeric',
-            'lama_pembakaran' => 'nullable|string|max:100',
+            'jumlah_solar' => 'nullable|numeric|min:0',
             'ruangan_id' => 'required|exists:ruangan,id',
-            'nama_pelanggan' => 'required|string|max:255',
+            'nama_penanggung_jawab' => 'required|string|max:255',
+            'no_telepon_penanggung_jawab' => 'required|string|max:255',
+            'tanggal_lahir_jenazah' => 'required|date',
+            'tempat_lahir_jenazah' => 'required|string|max:255',
+            'nama_jenazah' => 'required|string|max:255',
+            'usia_jenazah' => 'required|integer|min:0',
             'alamat' => 'nullable|string|max:255',
-            'umur' => 'nullable|string|max:50',
             'foto_permohonan' => 'nullable|image|max:2048',
             'foto_tiba' => 'nullable|image|max:2048',
             'foto_awal' => 'nullable|image|max:2048',
@@ -138,16 +211,64 @@ class LaporanController extends Controller
         ]);
 
         $laporan = Jadwal::findOrFail($id);
-        $data = $request->all();
+
+        // Update or create PelangganKremasi record
+        $pelangganId = $laporan->{'pelanggan kremasi_id'} ?? $laporan->pelanggan_kremasi_id;
+        $pelanggan = null;
+        if ($pelangganId) {
+            $pelanggan = PelangganKremasi::find($pelangganId);
+        }
+
+        if ($pelanggan) {
+            $pelanggan->update([
+                'nama' => $request->nama_jenazah,
+                'usia' => $request->usia_jenazah,
+                'penannggung_jawab' => $request->nama_penanggung_jawab,
+                'no_telepon' => $request->no_telepon_penanggung_jawab,
+                'tanggal_lahir' => $request->tanggal_lahir_jenazah,
+                'tempat_lahir' => $request->tempat_lahir_jenazah,
+            ]);
+        } else {
+            $pelanggan = PelangganKremasi::create([
+                'nama' => $request->nama_jenazah,
+                'usia' => $request->usia_jenazah,
+                'penannggung_jawab' => $request->nama_penanggung_jawab,
+                'no_telepon' => $request->no_telepon_penanggung_jawab,
+                'tanggal_lahir' => $request->tanggal_lahir_jenazah,
+                'tempat_lahir' => $request->tempat_lahir_jenazah,
+            ]);
+        }
+
+        // Calculate lama_pembakaran (jam_akhir - jam_awal in minutes)
+        $jamAwal = Carbon::parse($request->jam_awal);
+        $jamAkhir = Carbon::parse($request->jam_akhir);
+        $diffInMinutes = $jamAwal->diffInMinutes($jamAkhir);
+
+        $data = $request->only(['date', 'waktu_tiba', 'jam_awal', 'jam_akhir', 'jumlah_solar', 'ruangan_id', 'alamat']);
+        $data['pelanggan kremasi_id'] = $pelanggan->id;
+        $data['nama_pelanggan'] = $pelanggan->nama;
+        $data['umur'] = $pelanggan->usia;
+        $data['lama_pembakaran'] = $diffInMinutes;
 
         $photoFields = ['foto_permohonan', 'foto_tiba', 'foto_awal', 'foto_akhir', 'foto_tulang', 'foto_abu'];
         foreach ($photoFields as $field) {
             if ($request->hasFile($field)) {
-                // Delete old file if exists
-                if ($laporan->$field && Storage::disk('public')->exists($laporan->$field)) {
-                    Storage::disk('public')->delete($laporan->$field);
+                // Delete old file and old picture record if exists
+                if ($laporan->$field) {
+                    if (Storage::disk('public')->exists($laporan->$field)) {
+                        Storage::disk('public')->delete($laporan->$field);
+                    }
+                    Picture::where('filepath', $laporan->$field)
+                        ->where('reports_idreports', $laporan->idreports)
+                        ->delete();
                 }
-                $data[$field] = $request->file($field)->store('laporan', 'public');
+                $storedPath = $request->file($field)->store('laporan', 'public');
+                $data[$field] = $storedPath;
+
+                Picture::create([
+                    'filepath' => $storedPath,
+                    'reports_idreports' => $laporan->idreports,
+                ]);
             }
         }
 
@@ -165,6 +286,18 @@ class LaporanController extends Controller
     public function destroy($id)
     {
         $laporan = Jadwal::findOrFail($id);
+
+        // Cleanup photos on delete
+        $photoFields = ['foto_permohonan', 'foto_tiba', 'foto_awal', 'foto_akhir', 'foto_tulang', 'foto_abu'];
+        foreach ($photoFields as $field) {
+            if ($laporan->$field && Storage::disk('public')->exists($laporan->$field)) {
+                Storage::disk('public')->delete($laporan->$field);
+            }
+        }
+
+        // Cleanup picture records
+        Picture::where('reports_idreports', $id)->delete();
+
         $laporan->delete();
 
         return redirect()->route('karyawan.laporan.index')->with('success', 'Laporan jadwal berhasil dihapus.');

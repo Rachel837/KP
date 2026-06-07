@@ -34,18 +34,34 @@ class JadwalController extends Controller
             'date' => 'required|date',
             'jam_awal' => 'required',
             'ruangan_id' => 'required|exists:ruangan,id',
-            'nama_pelanggan' => 'required|string|max:255',
+            'nama_penanggung_jawab' => 'required|string|max:255',
+            'no_telepon_penanggung_jawab' => 'required|string|max:255',
+            'tanggal_lahir_jenazah' => 'required|date',
+            'tempat_lahir_jenazah' => 'required|string|max:255',
+            'nama_jenazah' => 'required|string|max:255',
+            'usia_jenazah' => 'required|integer|min:0',
             'alamat' => 'nullable|string|max:255',
-            'umur' => 'nullable|string|max:50',
         ]);
 
-        $data = $request->all();
+        // Create PelangganKremasi record
+        $pelanggan = PelangganKremasi::create([
+            'nama' => $request->nama_jenazah,
+            'usia' => $request->usia_jenazah,
+            'penannggung_jawab' => $request->nama_penanggung_jawab,
+            'no_telepon' => $request->no_telepon_penanggung_jawab,
+            'tanggal_lahir' => $request->tanggal_lahir_jenazah,
+            'tempat_lahir' => $request->tempat_lahir_jenazah,
+        ]);
+
+        $data = $request->only(['date', 'jam_awal', 'ruangan_id', 'alamat']);
+        $data['pelanggan kremasi_id'] = $pelanggan->id;
+        $data['nama_pelanggan'] = $pelanggan->nama;
+        $data['umur'] = $pelanggan->usia;
         $data['user_iduser'] = auth()->user()->iduser;
-        
-        // Assign default values for required DB columns not in the simplified form
         $data['waktu_tiba'] = '00:00';
         $data['jam_akhir'] = '00:00';
         $data['jumlah_solar'] = 0;
+        $data['lama_pembakaran'] = null;
 
         Jadwal::create($data);
 
@@ -72,21 +88,64 @@ class JadwalController extends Controller
             'date' => 'required|date',
             'jam_awal' => 'required',
             'ruangan_id' => 'required|exists:ruangan,id',
-            'nama_pelanggan' => 'required|string|max:255',
+            'nama_penanggung_jawab' => 'required|string|max:255',
+            'no_telepon_penanggung_jawab' => 'required|string|max:255',
+            'tanggal_lahir_jenazah' => 'required|date',
+            'tempat_lahir_jenazah' => 'required|string|max:255',
+            'nama_jenazah' => 'required|string|max:255',
+            'usia_jenazah' => 'required|integer|min:0',
             'alamat' => 'nullable|string|max:255',
-            'umur' => 'nullable|string|max:50',
             'status' => 'required|in:Terjadwal,Selesai',
         ]);
 
         $jadwal = Jadwal::findOrFail($id);
-        $data = $request->only(['date', 'jam_awal', 'ruangan_id', 'nama_pelanggan', 'alamat', 'umur']);
+
+        // Update or create PelangganKremasi record
+        $pelangganId = $jadwal->{'pelanggan kremasi_id'} ?? $jadwal->pelanggan_kremasi_id;
+        $pelanggan = null;
+        if ($pelangganId) {
+            $pelanggan = PelangganKremasi::find($pelangganId);
+        }
+
+        if ($pelanggan) {
+            $pelanggan->update([
+                'nama' => $request->nama_jenazah,
+                'usia' => $request->usia_jenazah,
+                'penannggung_jawab' => $request->nama_penanggung_jawab,
+                'no_telepon' => $request->no_telepon_penanggung_jawab,
+                'tanggal_lahir' => $request->tanggal_lahir_jenazah,
+                'tempat_lahir' => $request->tempat_lahir_jenazah,
+            ]);
+        } else {
+            $pelanggan = PelangganKremasi::create([
+                'nama' => $request->nama_jenazah,
+                'usia' => $request->usia_jenazah,
+                'penannggung_jawab' => $request->nama_penanggung_jawab,
+                'no_telepon' => $request->no_telepon_penanggung_jawab,
+                'tanggal_lahir' => $request->tanggal_lahir_jenazah,
+                'tempat_lahir' => $request->tempat_lahir_jenazah,
+            ]);
+        }
+
+        $data = $request->only(['date', 'jam_awal', 'ruangan_id', 'alamat']);
+        $data['pelanggan kremasi_id'] = $pelanggan->id;
+        $data['nama_pelanggan'] = $pelanggan->nama;
+        $data['umur'] = $pelanggan->usia;
 
         if ($request->status === 'Selesai') {
-            if (empty($jadwal->lama_pembakaran)) {
+            // Calculate if we have jam_akhir, otherwise keep existing or set 'Selesai'
+            if ($jadwal->jam_akhir && $jadwal->jam_akhir !== '00:00') {
+                $jamAwal = Carbon::parse($request->jam_awal);
+                $jamAkhir = Carbon::parse($jadwal->jam_akhir);
+                $data['lama_pembakaran'] = $jamAwal->diffInMinutes($jamAkhir);
+            } else {
                 $data['lama_pembakaran'] = 'Selesai';
             }
         } else {
             $data['lama_pembakaran'] = null;
+            $data['waktu_tiba'] = '00:00';
+            $data['jam_akhir'] = '00:00';
+            $data['jumlah_solar'] = 0;
             
             // Clean up old photo files if reverting status to Terjadwal
             $photoFields = ['foto_permohonan', 'foto_tiba', 'foto_awal', 'foto_akhir', 'foto_tulang', 'foto_abu'];

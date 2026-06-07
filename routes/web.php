@@ -19,7 +19,7 @@ Route::get('/home', function () {
     }
 
     if ($role === 'koor') {
-        return redirect()->route('koor.dashboard');
+        return redirect()->route('karyawan.dashboard');
     }
 
     if ($role === 'karyawan') {
@@ -39,7 +39,7 @@ Route::get('/dashboard', function () {
     
 
     if ($role === 'koor') {
-        return redirect()->route('koor.dashboard');
+        return redirect()->route('karyawan.dashboard');
     }
 
     if ($role === 'karyawan') {
@@ -55,18 +55,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
-    // Koor routes
+    // Koor routes (Exclusive to Koor)
     Route::middleware('role:koor')->prefix('koor')->group(function () {
-        Route::get('/dashboard', [\App\Http\Controllers\Koor\DashboardController::class, 'index'])->name('koor.dashboard');
         Route::get('/laporan-bulanan', [\App\Http\Controllers\Koor\LaporanController::class, 'bulanan'])->name('laporan.bulanan');
-        Route::resource('/laporan', \App\Http\Controllers\Koor\LaporanController::class);
         Route::resource('/users', \App\Http\Controllers\Koor\UserController::class)->names('koor.users');
     });
 
-    // Karyawan routes
-    Route::middleware('role:karyawan')->prefix('karyawan')->group(function () {
+    // Karyawan & Koor routes (Shared)
+    Route::middleware('role:karyawan,koor')->prefix('karyawan')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Karyawan\DashboardController::class, 'index'])->name('karyawan.dashboard');
-        Route::get('/laporan-bulanan', [\App\Http\Controllers\Karyawan\LaporanController::class, 'bulanan'])->name('karyawan.laporan.bulanan');
         Route::resource('/laporan', \App\Http\Controllers\Karyawan\LaporanController::class)->names('karyawan.laporan');
         Route::resource('/jadwal', \App\Http\Controllers\Karyawan\JadwalController::class)->names('karyawan.jadwal');
     });

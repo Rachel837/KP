@@ -77,7 +77,7 @@
                             if ($role === 'karyawan') {
                                 $routeTarget = route('karyawan.jadwal.index');
                             } elseif ($role === 'koor') {
-                                $routeTarget = route('laporan.index');
+                                $routeTarget = route('karyawan.laporan.index');
                             }
                         }
                     @endphp

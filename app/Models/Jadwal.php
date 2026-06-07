@@ -20,6 +20,7 @@ class Jadwal extends Model
         'user_iduser',
         'ruangan_id',
         'pelanggan_kremasi_id',
+        'pelanggan kremasi_id',
         'nama_pelanggan',
         'alamat',
         'umur',
@@ -43,7 +44,7 @@ class Jadwal extends Model
 
     public function pelanggan()
     {
-        return $this->belongsTo(PelangganKremasi::class, 'pelanggan_kremasi_id', 'id');
+        return $this->belongsTo(PelangganKremasi::class, 'pelanggan kremasi_id', 'id');
     }
 
     public function pictures()

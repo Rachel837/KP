@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="mb-4">
-                    <h1 class="fs-3 mb-1">Dashboard Karyawan</h1>
+                    <h1 class="fs-3 mb-1">Dashboard {{ auth()->user()->role->nama === 'koor' ? 'Koordinator' : 'Karyawan' }}</h1>
                     <p>Selamat datang! Berikut adalah jadwal kremasi untuk 1 minggu ke depan ({{ $startDate->format('d M Y') }} - {{ $endDate->format('d M Y') }}).</p>
                 </div>
             </div>

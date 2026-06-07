@@ -17,42 +17,74 @@
                             @csrf
                             @method('PUT')
                             
+                            <h5 class="mb-3 text-dark fw-bold">Data Jenazah & Penanggung Jawab</h5>
                             <div class="row">
-                                <div class="col-md-8 mb-3">
-                                    <label for="nama_pelanggan" class="form-label fw-medium text-dark">Nama Almarhum</label>
-                                    <input type="text" class="form-control @error('nama_pelanggan') is-invalid @enderror" id="nama_pelanggan" name="nama_pelanggan" value="{{ old('nama_pelanggan', $jadwal->nama_pelanggan) }}" required placeholder="Nama Almarhum">
-                                    @error('nama_pelanggan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                <div class="col-md-6 mb-3">
+                                    <label for="nama_jenazah" class="form-label fw-medium text-dark">Nama Jenazah (Almarhum)</label>
+                                    <input type="text" class="form-control @error('nama_jenazah') is-invalid @enderror" id="nama_jenazah" name="nama_jenazah" value="{{ old('nama_jenazah', $jadwal->pelanggan->nama ?? $jadwal->nama_pelanggan) }}" required placeholder="Nama Jenazah">
+                                    @error('nama_jenazah')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
 
-                                <div class="col-md-4 mb-3">
-                                    <label for="umur" class="form-label fw-medium text-dark">Umur</label>
-                                    <input type="text" class="form-control @error('umur') is-invalid @enderror" id="umur" name="umur" value="{{ old('umur', $jadwal->umur) }}" placeholder="Contoh: 60">
-                                    @error('umur')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                <div class="col-md-6 mb-3">
+                                    <label for="usia_jenazah" class="form-label fw-medium text-dark">Usia Jenazah (Tahun)</label>
+                                    <input type="number" class="form-control @error('usia_jenazah') is-invalid @enderror" id="usia_jenazah" name="usia_jenazah" value="{{ old('usia_jenazah', $jadwal->pelanggan->usia ?? $jadwal->umur) }}" required placeholder="Contoh: 60">
+                                    @error('usia_jenazah')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                             </div>
 
                             <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="tempat_lahir_jenazah" class="form-label fw-medium text-dark">Tempat Lahir Jenazah</label>
+                                    <input type="text" class="form-control @error('tempat_lahir_jenazah') is-invalid @enderror" id="tempat_lahir_jenazah" name="tempat_lahir_jenazah" value="{{ old('tempat_lahir_jenazah', $jadwal->pelanggan->tempat_lahir ?? '') }}" required placeholder="Tempat Lahir Jenazah">
+                                    @error('tempat_lahir_jenazah')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="tanggal_lahir_jenazah" class="form-label fw-medium text-dark">Tanggal Lahir Jenazah</label>
+                                    <input type="date" class="form-control @error('tanggal_lahir_jenazah') is-invalid @enderror" id="tanggal_lahir_jenazah" name="tanggal_lahir_jenazah" value="{{ old('tanggal_lahir_jenazah', $jadwal->pelanggan->tanggal_lahir ?? '') }}" required>
+                                    @error('tanggal_lahir_jenazah')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nama_penanggung_jawab" class="form-label fw-medium text-dark">Nama Penanggung Jawab Jenazah</label>
+                                    <input type="text" class="form-control @error('nama_penanggung_jawab') is-invalid @enderror" id="nama_penanggung_jawab" name="nama_penanggung_jawab" value="{{ old('nama_penanggung_jawab', $jadwal->pelanggan->penannggung_jawab ?? $jadwal->pelanggan->penanggung_jawab ?? '') }}" required placeholder="Nama Penanggung Jawab">
+                                    @error('nama_penanggung_jawab')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="no_telepon_penanggung_jawab" class="form-label fw-medium text-dark">No. Telepon Penanggung Jawab</label>
+                                    <input type="text" class="form-control @error('no_telepon_penanggung_jawab') is-invalid @enderror" id="no_telepon_penanggung_jawab" name="no_telepon_penanggung_jawab" value="{{ old('no_telepon_penanggung_jawab', $jadwal->pelanggan->no_telepon ?? '') }}" required placeholder="Contoh: 08123456789">
+                                    @error('no_telepon_penanggung_jawab')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                            </div>
+
+                            <hr class="my-4 text-muted">
+                            <h5 class="mb-3 text-dark fw-bold">Detail Jadwal Kremasi</h5>
+
+                            <div class="row">
                                 <div class="col-md-12 mb-3">
-                                    <label for="alamat" class="form-label fw-medium text-dark">Alamat</label>
+                                    <label for="alamat" class="form-label fw-medium text-dark">Alamat Almarhum</label>
                                     <input type="text" class="form-control @error('alamat') is-invalid @enderror" id="alamat" name="alamat" value="{{ old('alamat', $jadwal->alamat) }}" placeholder="Alamat Almarhum">
                                     @error('alamat')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                             </div>
 
                             <div class="row">
-                                <div class="col-md-3 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="date" class="form-label fw-medium text-dark">Tanggal Kremasi</label>
                                     <input type="date" class="form-control @error('date') is-invalid @enderror" id="date" name="date" value="{{ old('date', $jadwal->date) }}" required>
                                     @error('date')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
 
-                                <div class="col-md-3 mb-3">
-                                    <label for="jam_awal" class="form-label fw-medium text-dark">Jam Awal</label>
-                                    <input type="time" class="form-control @error('jam_awal') is-invalid @enderror" id="jam_awal" name="jam_awal" value="{{ old('jam_awal', $jadwal->jam_awal) }}" required>
+                                <div class="col-md-4 mb-3">
+                                    <label for="jam_awal" class="form-label fw-medium text-dark">Jam Mulai</label>
+                                    <input type="time" class="form-control @error('jam_awal') is-invalid @enderror" id="jam_awal" name="jam_awal" value="{{ old('jam_awal', $jadwal->jam_awal ? substr($jadwal->jam_awal, 0, 5) : '') }}" required>
                                     @error('jam_awal')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
 
-                                <div class="col-md-3 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="ruangan_id" class="form-label fw-medium text-dark">Ruangan/Mesin</label>
                                     <select class="form-select @error('ruangan_id') is-invalid @enderror" id="ruangan_id" name="ruangan_id" required>
                                         @foreach($ruangans as $ruang)
@@ -61,8 +93,10 @@
                                     </select>
                                     @error('ruangan_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
+                            </div>
 
-                                <div class="col-md-3 mb-3">
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
                                     <label for="status" class="form-label fw-medium text-dark">Status</label>
                                     <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
                                         @php
