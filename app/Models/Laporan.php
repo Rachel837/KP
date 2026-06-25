@@ -16,7 +16,8 @@ class Laporan extends Model
         'jam_awal',
         'jam_akhir',
         'jumlah_solar',
-        'lama_pembakaran'
+        'lama_pembakaran',
+        'pemakaian_listrik'
     ];
 
     public function jadwal()

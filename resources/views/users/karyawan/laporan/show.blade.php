@@ -143,7 +143,7 @@
                 </div>
                 <div class="text-center border border-secondary-subtle py-0 px-2 bg-light shadow-sm" style="border-top: 2px solid #1a1a1a !important; min-width: 140px;">
                     <div class="fw-bold text-muted" style="font-size: 9px; padding-top: 4px;">PEMAKAIAN LISTRIK</div>
-                    <div class="fw-bold text-dark pb-1" style="font-size: 13px;">{{ $laporan->laporan->lama_pembakaran ?? '0' }} <span style="font-size:10px; font-weight:500;">Menit</span></div>
+                    <div class="fw-bold text-dark pb-1" style="font-size: 13px;">{{ $laporan->laporan->pemakaian_listrik ? number_format($laporan->laporan->pemakaian_listrik, 2) : '0' }} <span style="font-size:10px; font-weight:500;">kWH</span></div>
                 </div>
             </div>            <!-- Documentation Activity -->
             <div class="mb-3">

@@ -90,12 +90,12 @@ class LaporanController extends Controller
             'nama_jenazah' => 'required|string|max:255',
             'usia_jenazah' => 'required|integer|min:0',
             'alamat' => 'nullable|string|max:255',
-            'foto_permohonan' => 'nullable|image|max:2048',
-            'foto_tiba' => 'nullable|image|max:2048',
-            'foto_awal' => 'nullable|image|max:2048',
-            'foto_akhir' => 'nullable|image|max:2048',
-            'foto_tulang' => 'nullable|image|max:2048',
-            'foto_abu' => 'nullable|image|max:2048',
+            'foto_permohonan' => 'required|image|max:2048',
+            'foto_tiba' => 'required|image|max:2048',
+            'foto_awal' => 'required|image|max:2048',
+            'foto_akhir' => 'required|image|max:2048',
+            'foto_tulang' => 'required|image|max:2048',
+            'foto_abu' => 'required|image|max:2048',
         ]);
 
         $photoFields = ['foto_permohonan', 'foto_tiba', 'foto_awal', 'foto_akhir', 'foto_tulang', 'foto_abu'];
@@ -140,6 +140,8 @@ class LaporanController extends Controller
             $data = $request->only(['date', 'ruangan_id']);
             $data['pelanggan kremasi_id'] = $pelanggan->id;
 
+            $pemakaianListrik = ($diffInMinutes / 60) * 8.678;
+
             // Retrieve or create the Laporan record
             $laporan = Laporan::firstOrCreate(['id_jadwal' => $jadwal->id_jadwal]);
             $laporan->update([
@@ -148,6 +150,7 @@ class LaporanController extends Controller
                 'jam_akhir' => $request->jam_akhir,
                 'jumlah_solar' => $request->jumlah_solar,
                 'lama_pembakaran' => $diffInMinutes,
+                'pemakaian_listrik' => $pemakaianListrik,
             ]);
 
             $picture = Picture::firstOrCreate(['reports_idreports' => $jadwal->id_jadwal]);
@@ -186,6 +189,8 @@ class LaporanController extends Controller
 
             $jadwal = Jadwal::create($data);
 
+            $pemakaianListrik = ($diffInMinutes / 60) * 8.678;
+
             // Create Laporan record
             Laporan::create([
                 'id_jadwal' => $jadwal->id_jadwal,
@@ -194,6 +199,7 @@ class LaporanController extends Controller
                 'jam_akhir' => $request->jam_akhir,
                 'jumlah_solar' => $request->jumlah_solar,
                 'lama_pembakaran' => $diffInMinutes,
+                'pemakaian_listrik' => $pemakaianListrik,
             ]);
 
             $picture = Picture::firstOrCreate(['reports_idreports' => $jadwal->id_jadwal]);
@@ -294,6 +300,8 @@ class LaporanController extends Controller
         $data = $request->only(['date', 'ruangan_id']);
         $data['pelanggan kremasi_id'] = $pelanggan->id;
 
+        $pemakaianListrik = ($diffInMinutes / 60) * 8.678;
+
         // Retrieve or create the Laporan record
         $laporan = Laporan::firstOrCreate(['id_jadwal' => $jadwal->id_jadwal]);
         $laporan->update([
@@ -302,6 +310,7 @@ class LaporanController extends Controller
             'jam_akhir' => $request->jam_akhir,
             'jumlah_solar' => $request->jumlah_solar,
             'lama_pembakaran' => $diffInMinutes,
+            'pemakaian_listrik' => $pemakaianListrik,
         ]);
 
         $photoFields = ['foto_permohonan', 'foto_tiba', 'foto_awal', 'foto_akhir', 'foto_tulang', 'foto_abu'];

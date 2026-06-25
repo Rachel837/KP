@@ -121,12 +121,19 @@
                             <div class="row">
                                 <div class="col-md-12 mb-3">
                                     <label for="status" class="form-label fw-medium text-dark">Status</label>
+                                    @php
+                                        $isSelesai = ($jadwal->picture && $jadwal->picture->foto_abu) || ($jadwal->laporan && $jadwal->laporan->lama_pembakaran);
+                                        $scheduleTimeStr = ($jadwal->laporan && $jadwal->laporan->jam_awal) ? $jadwal->laporan->jam_awal : '00:00:00';
+                                        $scheduleDateTime = \Carbon\Carbon::parse($jadwal->date . ' ' . $scheduleTimeStr);
+                                        $canComplete = now()->greaterThanOrEqualTo($scheduleDateTime);
+                                    @endphp
                                     <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                        @php
-                                            $isSelesai = ($jadwal->picture && $jadwal->picture->foto_abu) || ($jadwal->laporan && $jadwal->laporan->lama_pembakaran);
-                                        @endphp
                                         <option value="Terjadwal" {{ !$isSelesai ? 'selected' : '' }}>Terjadwal</option>
-                                        <option value="Selesai" {{ $isSelesai ? 'selected' : '' }}>Selesai</option>
+                                        @if($canComplete || $isSelesai)
+                                            <option value="Selesai" {{ $isSelesai ? 'selected' : '' }}>Selesai</option>
+                                        @else
+                                            <option value="Selesai" disabled>Selesai </option>
+                                        @endif
                                     </select>
                                     @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>

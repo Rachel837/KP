@@ -136,17 +136,17 @@
                                 <div class="row">
                                     <div class="col-md-4 mb-3">
                                         <label for="foto_permohonan" class="form-label fw-medium text-dark">Foto Bukti Surat Permohonan</label>
-                                        <input type="file" class="form-control @error('foto_permohonan') is-invalid @enderror" id="foto_permohonan" name="foto_permohonan" accept="image/*">
+                                        <input type="file" class="form-control @error('foto_permohonan') is-invalid @enderror" id="foto_permohonan" name="foto_permohonan" accept="image/*" required>
                                         @error('foto_permohonan')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="foto_tiba" class="form-label fw-medium text-dark">Foto Jenazah Tiba</label>
-                                        <input type="file" class="form-control @error('foto_tiba') is-invalid @enderror" id="foto_tiba" name="foto_tiba" accept="image/*">
+                                        <input type="file" class="form-control @error('foto_tiba') is-invalid @enderror" id="foto_tiba" name="foto_tiba" accept="image/*" required>
                                         @error('foto_tiba')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="foto_awal" class="form-label fw-medium text-dark">Foto Awal Pembakaran</label>
-                                        <input type="file" class="form-control @error('foto_awal') is-invalid @enderror" id="foto_awal" name="foto_awal" accept="image/*">
+                                        <input type="file" class="form-control @error('foto_awal') is-invalid @enderror" id="foto_awal" name="foto_awal" accept="image/*" required>
                                         @error('foto_awal')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
@@ -154,17 +154,17 @@
                                 <div class="row">
                                     <div class="col-md-4 mb-3">
                                         <label for="foto_akhir" class="form-label fw-medium text-dark">Foto Akhir Pembakaran</label>
-                                        <input type="file" class="form-control @error('foto_akhir') is-invalid @enderror" id="foto_akhir" name="foto_akhir" accept="image/*">
+                                        <input type="file" class="form-control @error('foto_akhir') is-invalid @enderror" id="foto_akhir" name="foto_akhir" accept="image/*" required>
                                         @error('foto_akhir')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="foto_tulang" class="form-label fw-medium text-dark">Foto Tulang</label>
-                                        <input type="file" class="form-control @error('foto_tulang') is-invalid @enderror" id="foto_tulang" name="foto_tulang" accept="image/*">
+                                        <input type="file" class="form-control @error('foto_tulang') is-invalid @enderror" id="foto_tulang" name="foto_tulang" accept="image/*" required>
                                         @error('foto_tulang')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="foto_abu" class="form-label fw-medium text-dark">Foto Abu</label>
-                                        <input type="file" class="form-control @error('foto_abu') is-invalid @enderror" id="foto_abu" name="foto_abu" accept="image/*">
+                                        <input type="file" class="form-control @error('foto_abu') is-invalid @enderror" id="foto_abu" name="foto_abu" accept="image/*" required>
                                         @error('foto_abu')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>

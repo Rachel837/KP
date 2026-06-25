@@ -129,6 +129,14 @@ class JadwalController extends Controller
 
         $jadwal = Jadwal::findOrFail($id);
 
+        if ($request->status === 'Selesai') {
+            $scheduleTimeStr = $request->jam_awal ?? '00:00:00';
+            $scheduleDateTime = \Carbon\Carbon::parse($request->date . ' ' . $scheduleTimeStr);
+            if (now()->lessThan($scheduleDateTime)) {
+                return back()->withErrors(['status' => 'Status tidak dapat diubah menjadi Selesai sebelum jadwal kremasi (' . $scheduleDateTime->translatedFormat('d M Y, H:i') . ' WIB) terlewati.'])->withInput();
+            }
+        }
+
         // Update or create PelangganKremasi record
         $pelangganId = $jadwal->{'pelanggan kremasi_id'} ?? $jadwal->pelanggan_kremasi_id;
         $pelanggan = null;
@@ -179,11 +187,13 @@ class JadwalController extends Controller
                 $jamAwal = Carbon::parse($request->jam_awal);
                 $jamAkhir = Carbon::parse($laporan->jam_akhir);
                 $laporan->lama_pembakaran = $jamAwal->diffInMinutes($jamAkhir);
+                $laporan->pemakaian_listrik = ($laporan->lama_pembakaran / 60) * 8.678;
             } else {
                 $laporan->lama_pembakaran = $laporan->lama_pembakaran === null ? 'Selesai' : $laporan->lama_pembakaran;
             }
         } else {
             $laporan->lama_pembakaran = null;
+            $laporan->pemakaian_listrik = null;
             $laporan->waktu_tiba = '00:00';
             $laporan->jam_akhir = '00:00';
             $laporan->jumlah_solar = 0;
