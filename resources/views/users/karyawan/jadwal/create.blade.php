@@ -19,7 +19,7 @@
                             <h5 class="mb-3 text-dark fw-bold">Data Jenazah & Penanggung Jawab</h5>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="nama_jenazah" class="form-label fw-medium text-dark">Nama Jenazah (Almarhum)</label>
+                                    <label for="nama_jenazah" class="form-label fw-medium text-dark">Nama Jenazah </label>
                                     <input type="text" class="form-control @error('nama_jenazah') is-invalid @enderror" id="nama_jenazah" name="nama_jenazah" value="{{ old('nama_jenazah') }}" required placeholder="Nama Jenazah">
                                     @error('nama_jenazah')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
@@ -46,6 +46,22 @@
                             </div>
 
                             <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="alamat" class="form-label fw-medium text-dark">Alamat Jenazah</label>
+                                    <input type="text" class="form-control @error('alamat') is-invalid @enderror" id="alamat" name="alamat" value="{{ old('alamat') }}" placeholder="Alamat Jenazah">
+                                    @error('alamat')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="foto_jenazah" class="form-label fw-medium text-dark">Foto Jenazah</label>
+                                    <input type="file" class="form-control @error('foto_jenazah') is-invalid @enderror" id="foto_jenazah" name="foto_jenazah" accept="image/*">
+                                    @error('foto_jenazah')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="nama_penanggung_jawab" class="form-label fw-medium text-dark">Nama Penanggung Jawab Jenazah</label>
                                     <input type="text" class="form-control @error('nama_penanggung_jawab') is-invalid @enderror" id="nama_penanggung_jawab" name="nama_penanggung_jawab" value="{{ old('nama_penanggung_jawab') }}" required placeholder="Nama Penanggung Jawab">
@@ -62,25 +78,11 @@
                             <hr class="my-4 text-muted">
                             <h5 class="mb-3 text-dark fw-bold">Detail Jadwal Kremasi</h5>
 
-                            <div class="row">
-                                <div class="col-md-12 mb-3">
-                                    <label for="alamat" class="form-label fw-medium text-dark">Alamat Almarhum</label>
-                                    <input type="text" class="form-control @error('alamat') is-invalid @enderror" id="alamat" name="alamat" value="{{ old('alamat') }}" placeholder="Alamat Almarhum">
-                                    @error('alamat')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
-                            </div>
-
-                            <div class="row">
+                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label for="date" class="form-label fw-medium text-dark">Tanggal Kremasi</label>
                                     <input type="date" class="form-control @error('date') is-invalid @enderror" id="date" name="date" value="{{ old('date') }}" required>
                                     @error('date')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
-
-                                <div class="col-md-4 mb-3">
-                                    <label for="jam_awal" class="form-label fw-medium text-dark">Jam Mulai</label>
-                                    <input type="time" class="form-control @error('jam_awal') is-invalid @enderror" id="jam_awal" name="jam_awal" value="{{ old('jam_awal') }}" required>
-                                    @error('jam_awal')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
 
                                 <div class="col-md-4 mb-3">
@@ -92,6 +94,14 @@
                                         @endforeach
                                     </select>
                                     @error('ruangan_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="jam_awal" class="form-label fw-medium text-dark">Jam</label>
+                                    <select class="form-select @error('jam_awal') is-invalid @enderror" id="jam_awal" name="jam_awal" data-selected-value="{{ old('jam_awal') }}" required>
+                                        <option value="" disabled selected>Pilih Jam</option>
+                                    </select>
+                                    @error('jam_awal')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                             </div>
 
@@ -106,4 +116,103 @@
         </div>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ruanganSelect = document.getElementById('ruangan_id');
+    const jamAwalSelect = document.getElementById('jam_awal');
+    const dateInput = document.getElementById('date');
+    
+    if (!ruanganSelect || !jamAwalSelect || !dateInput) return;
+    
+    // Define slots per machine (ruangan ID)
+    const slots = {
+        '1': ['09:30', '13:00', '15:30'],
+        '2': ['10:30', '14:00', '16:00']
+    };
+    
+    const initialValue = jamAwalSelect.getAttribute('data-selected-value') || '';
+
+    function updateJamOptions() {
+        const selectedRuangan = ruanganSelect.value;
+        const selectedDate = dateInput.value;
+        let allowedSlots = slots[selectedRuangan] || [];
+        
+        // Clear options first to show loading state if needed
+        jamAwalSelect.innerHTML = '<option value="" disabled selected>Memuat jam...</option>';
+        
+        // Filter out past times if the selected date is today
+        if (selectedDate && allowedSlots.length > 0) {
+            const today = new Date();
+            const selected = new Date(selectedDate);
+            
+            // Check if selected date is today
+            if (today.getFullYear() === selected.getFullYear() &&
+                today.getMonth() === selected.getMonth() &&
+                today.getDate() === selected.getDate()) {
+                
+                const currentHour = today.getHours();
+                const currentMinute = today.getMinutes();
+                
+                allowedSlots = allowedSlots.filter(slot => {
+                    const [slotHour, slotMinute] = slot.split(':').map(Number);
+                    if (slotHour > currentHour) return true;
+                    if (slotHour === currentHour && slotMinute > currentMinute) return true;
+                    return false;
+                });
+            }
+        }
+        
+        // Fetch booked slots from backend
+        if (selectedDate && selectedRuangan) {
+            fetch(`/karyawan/jadwal/booked-slots?date=${selectedDate}&ruangan_id=${selectedRuangan}`)
+                .then(response => response.json())
+                .then(bookedSlots => {
+                    // Filter out already booked slots
+                    allowedSlots = allowedSlots.filter(slot => {
+                        return !bookedSlots.includes(slot) && !bookedSlots.includes(slot + ':00');
+                    });
+                    renderOptions(allowedSlots, selectedRuangan);
+                })
+                .catch(error => {
+                    console.error('Error fetching booked slots:', error);
+                    renderOptions(allowedSlots, selectedRuangan);
+                });
+        } else {
+            renderOptions(allowedSlots, selectedRuangan);
+        }
+    }
+
+    function renderOptions(allowedSlots, selectedRuangan) {
+        jamAwalSelect.innerHTML = '<option value="" disabled selected>Pilih Jam</option>';
+        
+        if (allowedSlots.length === 0 && selectedRuangan) {
+            const option = document.createElement('option');
+            option.value = "";
+            option.textContent = "Tidak ada jam tersedia";
+            option.disabled = true;
+            jamAwalSelect.appendChild(option);
+        } else {
+            allowedSlots.forEach(slot => {
+                const option = document.createElement('option');
+                option.value = slot;
+                option.textContent = slot + ' WIB';
+                
+                // Match with or without seconds
+                if (slot === initialValue || (slot + ':00' === initialValue) || (initialValue.startsWith(slot))) {
+                    option.selected = true;
+                }
+                jamAwalSelect.appendChild(option);
+            });
+        }
+    }
+
+    ruanganSelect.addEventListener('change', updateJamOptions);
+    dateInput.addEventListener('change', updateJamOptions);
+    
+    // Initial load
+    if (ruanganSelect.value || dateInput.value) {
+        updateJamOptions();
+    }
+});
+</script>
 @endsection

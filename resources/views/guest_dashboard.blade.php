@@ -307,11 +307,6 @@
                     <a href="{{ route('login') }}" class="btn btn-outline-custom">
                         Masuk
                     </a>
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="btn btn-primary-custom">
-                            Daftar
-                        </a>
-                    @endif
                 @endauth
             </div>
         </div>
@@ -326,7 +321,7 @@
                 <div class="col-lg-8 mb-4 mb-lg-0">
                     <div class="hero-date mb-3">
                         <i class="ti ti-calendar-event"></i>
-                        <span>{{ \Carbon\Carbon::parse($selectedDate)->locale('id')->translatedFormat('l, d F Y') }}</span>
+                        <span>{{ \Carbon\Carbon::parse($today)->locale('id')->translatedFormat('l, d F Y') }}</span>
                     </div>
                     <h1 class="display-5 fw-bold mb-2">Jadwal Layanan Kremasi</h1>
                     <p class="lead mb-0 text-white-50">Menyajikan jadwal pelaksanaan kremasi jenazah secara transparan dan real-time.</p>
@@ -334,11 +329,11 @@
                 <div class="col-lg-4 text-lg-end">
                     <div class="d-inline-flex gap-3">
                         <div class="stat-badge">
-                            <span class="fs-4 fw-bold text-warning">{{ $jadwals->filter(fn($j) => !($j->foto_abu || $j->lama_pembakaran))->count() }}</span>
+                            <span class="fs-4 fw-bold text-warning">{{ $jadwals->filter(fn($j) => !(($j->picture && $j->picture->foto_abu) || ($j->laporan && $j->laporan->lama_pembakaran)))->count() }}</span>
                             <span class="small text-white-50">Terjadwal</span>
                         </div>
                         <div class="stat-badge">
-                            <span class="fs-4 fw-bold text-success">{{ $jadwals->filter(fn($j) => $j->foto_abu || $j->lama_pembakaran)->count() }}</span>
+                            <span class="fs-4 fw-bold text-success">{{ $jadwals->filter(fn($j) => ($j->picture && $j->picture->foto_abu) || ($j->laporan && $j->laporan->lama_pembakaran))->count() }}</span>
                             <span class="small text-white-50">Selesai</span>
                         </div>
                     </div>
@@ -347,72 +342,39 @@
         </div>
 
         <div class="row">
-            <!-- Filter Bar -->
-            <div class="col-12">
-                <div class="filter-card">
-                    <form action="{{ url('/') }}" method="GET" class="row g-3 align-items-end">
-                        <div class="col-md-5">
-                            <label class="form-label fw-semibold text-secondary small">Nama Almarhum</label>
-                            <div class="position-relative">
-                                <span class="position-absolute top-50 translate-middle-y ps-3 text-muted">
-                                    <i class="ti ti-search"></i>
-                                </span>
-                                <input type="text" name="search" value="{{ $searchQuery }}" class="form-control form-control-custom ps-5" placeholder="Cari nama almarhum...">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold text-secondary small">Tanggal Kremasi</label>
-                            <div class="position-relative">
-                                <span class="position-absolute top-50 translate-middle-y ps-3 text-muted">
-                                    <i class="ti ti-calendar"></i>
-                                </span>
-                                <input type="date" name="date" value="{{ $selectedDate }}" onchange="this.form.submit()" class="form-control form-control-custom ps-5">
-                            </div>
-                        </div>
-                        <div class="col-md-3 d-flex gap-2">
-                            <button type="submit" class="btn btn-primary-custom flex-grow-1">
-                                <i class="ti ti-filter me-1"></i> Saring
-                            </button>
-                            @if($searchQuery || $selectedDate !== $today)
-                                <a href="{{ url('/') }}" class="btn btn-outline-custom px-3">
-                                    <i class="ti ti-refresh"></i>
-                                </a>
-                            @endif
-                        </div>
-                    </form>
-                </div>
-            </div>
-
             <!-- List Schedule -->
             <div class="col-12">
                 <h3 class="fw-bold mb-4 d-flex align-items-center gap-2 text-dark">
                     <i class="ti ti-list-details text-primary"></i>
-                    @if($selectedDate === $today)
-                        Jadwal Kremasi Hari Ini
-                    @else
-                        Jadwal Kremasi Tanggal {{ \Carbon\Carbon::parse($selectedDate)->locale('id')->translatedFormat('d F Y') }}
-                    @endif
+                    Jadwal Kremasi Hari Ini
                 </h3>
 
                 <div class="d-flex flex-column gap-3">
                     @forelse($jadwals as $jadwal)
                         @php
-                            $isSelesai = $jadwal->foto_abu || $jadwal->lama_pembakaran;
+                            $isSelesai = ($jadwal->picture && $jadwal->picture->foto_abu) || ($jadwal->laporan && $jadwal->laporan->lama_pembakaran);
                             $statusClass = $isSelesai ? 'status-selesai' : 'status-terjadwal';
                         @endphp
                         
                         <div class="schedule-card {{ $statusClass }}">
                             <div class="row align-items-center">
-                                <!-- Time info -->
-                                <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
-                                    <div class="time-badge">
-                                        <i class="ti ti-clock"></i>
-                                        <span>{{ \Carbon\Carbon::parse($jadwal->jam_awal)->format('H:i') }}</span>
-                                    </div>
-                                    <span class="small text-muted block mt-1 d-block">Waktu Pelaksanaan</span>
+                                <!-- Photo info (Moved here instead of time) -->
+                                <div class="col-md-3 col-lg-2 mb-3 mb-md-0 d-flex align-items-center justify-content-start">
+                                    @php
+                                        $fotoJenazah = $jadwal->picture ? $jadwal->picture->foto_jenazah : null;
+                                    @endphp
+                                    @if($fotoJenazah)
+                                        <div class="overflow-hidden shadow-sm" style="width: 100px; height: 100px; border-radius: 16px; border: 2px solid #e2e8f0;">
+                                            <img src="{{ asset('storage/' . $fotoJenazah) }}" alt="Foto Jenazah" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                    @else
+                                        <div class="d-flex align-items-center justify-content-center bg-light text-muted shadow-sm" style="width: 100px; height: 100px; border-radius: 16px; border: 2px dashed #cbd5e1;">
+                                            <i class="ti ti-user-circle" style="font-size: 3rem; color: #cbd5e1;"></i>
+                                        </div>
+                                    @endif
                                 </div>
                                 
-                                <!-- Name and Details -->
+                                <!-- Name and Details (Jam moved here, Alamat removed) -->
                                 <div class="col-md-5 col-lg-6 mb-3 mb-md-0">
                                     <div class="alm-name">{{ $jadwal->nama_pelanggan }}</div>
                                     <div class="d-flex flex-wrap gap-2">
@@ -422,12 +384,10 @@
                                                 {{ $jadwal->umur }} Tahun
                                             </span>
                                         @endif
-                                        @if($jadwal->alamat)
-                                            <span class="info-pill">
-                                                <i class="ti ti-map-pin"></i>
-                                                {{ $jadwal->alamat }}
-                                            </span>
-                                        @endif
+                                        <span class="info-pill">
+                                            <i class="ti ti-clock"></i>
+                                            Jam Kremasi: {{ $jadwal->laporan ? \Carbon\Carbon::parse($jadwal->laporan->jam_awal)->format('H:i') : '-' }} WIB
+                                        </span>
                                     </div>
                                 </div>
                                 
@@ -437,10 +397,10 @@
                                         <i class="ti ti-box"></i>
                                         Mesin {{ $jadwal->ruangan->nama ?? '-' }}
                                     </span>
-                                    <span class="small text-muted d-block mt-1">Ruang Pembakaran</span>
+                                    <span class="small text-muted d-block mt-1">Mesin </span>
                                 </div>
                                 
-                                <!-- Status Badge -->
+                                <!-- Status Badge (Button removed) -->
                                 <div class="col-md-2 col-lg-2 text-md-end">
                                     @if($isSelesai)
                                         <span class="badge-status badge-status-selesai">

@@ -25,13 +25,6 @@
             @enderror
         </div>
 
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input id="username" name="username" type="text" class="form-control @error('username') is-invalid @enderror" value="{{ old('username', $user->username) }}" required autocomplete="username">
-            @error('username')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
 
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>

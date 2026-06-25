@@ -15,8 +15,8 @@
 
     <!-- Bell icon -->
     @php
-        $recentJadwals = \App\Models\Jadwal::with('ruangan')->orderBy('idreports', 'desc')->take(5)->get();
-        $latestJadwalId = $recentJadwals->first()->idreports ?? 0;
+        $recentJadwals = \App\Models\Jadwal::with(['ruangan', 'laporan'])->orderBy('id_jadwal', 'desc')->take(5)->get();
+        $latestJadwalId = $recentJadwals->first()->id_jadwal ?? 0;
     @endphp
     <li class="dropdown">
         <a class="position-relative btn-icon btn-sm btn-light btn rounded-circle" data-bs-toggle="dropdown"
@@ -40,7 +40,7 @@
             </div>
             <ul class="list-unstyled p-0 m-0" style="max-height: 350px; overflow-y: auto;">
                 @forelse($recentJadwals as $recentJadwal)
-                    <li class="p-3 border-bottom notification-item" data-id="{{ $recentJadwal->idreports }}">
+                    <li class="p-3 border-bottom notification-item" data-id="{{ $recentJadwal->id_jadwal }}">
                         <div class="d-flex gap-3 align-items-start">
                             <div class="icon-shape bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; flex-shrink: 0;">
                                 <i class="ti ti-calendar-event fs-5"></i>
@@ -53,7 +53,7 @@
                                 <p class="mb-1 text-muted" style="font-size: 0.8rem;">Jadwal baru ditambahkan.</p>
                                 <div class="d-flex align-items-center gap-2 mt-1 text-secondary" style="font-size: 0.75rem;">
                                     <i class="ti ti-clock"></i>
-                                    <span>{{ \Carbon\Carbon::parse($recentJadwal->jam_awal)->format('H:i') }} - Mesin {{ $recentJadwal->ruangan->nama ?? '-' }}</span>
+                                    <span>{{ $recentJadwal->laporan ? \Carbon\Carbon::parse($recentJadwal->laporan->jam_awal)->format('H:i') : '-' }} - Mesin {{ $recentJadwal->ruangan->nama ?? '-' }}</span>
                                 </div>
                                 <div class="text-secondary mt-1" style="font-size: 0.7rem;">
                                     Tanggal: {{ \Carbon\Carbon::parse($recentJadwal->date)->locale('id')->translatedFormat('d M Y') }}
@@ -156,7 +156,7 @@
                     @endif
                     <div>
                         <h4 class="mb-0 small fw-bold text-dark">{{ Auth::user()->name }}</h4>
-                        <p class="mb-0 text-muted small" style="font-size: 0.8rem;">{{ Auth::user()->role->nama === 'koor' ? Auth::user()->email : (Auth::user()->username ? '@' . Auth::user()->username : Auth::user()->email) }}</p>
+                        <p class="mb-0 text-muted small" style="font-size: 0.8rem;">{{ Auth::user()->email }}</p>
                     </div>
                 </div>
                 <div class="p-2 d-flex flex-column gap-1 small">

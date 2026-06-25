@@ -9,21 +9,17 @@ use Carbon\Carbon;
 
 class GuestDashboardController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $today = Carbon::today()->toDateString();
-        $selectedDate = $request->input('date', $today);
-        $searchQuery = $request->input('search');
+        $today = Carbon::today('Asia/Jakarta')->toDateString();
 
-        $query = Jadwal::with(['ruangan'])
-            ->whereDate('date', $selectedDate);
+        $jadwals = Jadwal::with(['ruangan', 'picture', 'pelanggan', 'laporan'])
+            ->join('laporan', 'jadwal.id_jadwal', '=', 'laporan.id_jadwal')
+            ->whereDate('jadwal.date', $today)
+            ->orderBy('laporan.jam_awal', 'desc')
+            ->select('jadwal.*')
+            ->get();
 
-        if ($searchQuery) {
-            $query->where('nama_pelanggan', 'like', '%' . $searchQuery . '%');
-        }
-
-        $jadwals = $query->orderBy('jam_awal', 'asc')->get();
-
-        return view('guest_dashboard', compact('jadwals', 'selectedDate', 'searchQuery', 'today'));
+        return view('guest_dashboard', compact('jadwals', 'today'));
     }
 }

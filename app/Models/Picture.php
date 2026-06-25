@@ -11,12 +11,18 @@ class Picture extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'filepath',
-        'reports_idreports'
+        'reports_idreports',
+        'foto_jenazah',
+        'foto_permohonan',
+        'foto_tiba',
+        'foto_awal',
+        'foto_akhir',
+        'foto_tulang',
+        'foto_abu'
     ];
 
     public function jadwal()
     {
-        return $this->belongsTo(Jadwal::class, 'reports_idreports', 'idreports');
+        return $this->belongsTo(Jadwal::class, 'reports_idreports', 'id_jadwal');
     }
 }

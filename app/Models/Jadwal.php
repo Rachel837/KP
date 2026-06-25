@@ -7,29 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Jadwal extends Model
 {
     protected $table = 'jadwal';
-    protected $primaryKey = 'idreports';
+    protected $primaryKey = 'id_jadwal';
     public $timestamps = false;
 
     protected $fillable = [
         'date',
-        'waktu_tiba',
-        'jam_awal',
-        'jam_akhir',
-        'jumlah_solar',
-        'lama_pembakaran',
         'user_iduser',
         'ruangan_id',
         'pelanggan_kremasi_id',
-        'pelanggan kremasi_id',
-        'nama_pelanggan',
-        'alamat',
-        'umur',
-        'foto_permohonan',
-        'foto_tiba',
-        'foto_awal',
-        'foto_akhir',
-        'foto_tulang',
-        'foto_abu'
+        'pelanggan kremasi_id'
     ];
 
     public function user()
@@ -47,8 +33,28 @@ class Jadwal extends Model
         return $this->belongsTo(PelangganKremasi::class, 'pelanggan kremasi_id', 'id');
     }
 
-    public function pictures()
+    public function getNamaPelangganAttribute()
     {
-        return $this->hasMany(Picture::class, 'reports_idreports', 'idreports');
+        return $this->pelanggan->nama_jenazah ?? '-';
+    }
+
+    public function getAlamatAttribute()
+    {
+        return $this->pelanggan->alamat_jenazah ?? '-';
+    }
+
+    public function getUmurAttribute()
+    {
+        return $this->pelanggan->usia_jenazah ?? null;
+    }
+
+    public function picture()
+    {
+        return $this->hasOne(Picture::class, 'reports_idreports', 'id_jadwal');
+    }
+
+    public function laporan()
+    {
+        return $this->hasOne(Laporan::class, 'id_jadwal', 'id_jadwal');
     }
 }

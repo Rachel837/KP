@@ -20,9 +20,9 @@ class LaporanController extends Controller
 
         if ($request->has('ruangan_id')) {
             $selected_ruangan = Ruangan::findOrFail($request->ruangan_id);
-            $reports = Jadwal::with(['pelanggan', 'ruangan'])
+            $reports = Jadwal::with(['pelanggan', 'ruangan', 'laporan'])
                 ->where('ruangan_id', $request->ruangan_id)
-                ->orderBy('date', 'desc')
+                ->orderBy('id_jadwal', 'desc')
                 ->get();
         }
 

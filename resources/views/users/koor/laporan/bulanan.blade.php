@@ -45,9 +45,8 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="ps-4">No</th>
-                                <th>Tgl Pembakaran</th>
-                                <th>Nama Almarhum</th>
+                                <th class="ps-4">Tgl Pembakaran</th>
+                                <th>Nama Jenazah</th>
                                 <th>Alamat</th>
                                 <th>Usia</th>
                                 <th>Waktu Pembakaran</th>
@@ -57,17 +56,16 @@
                         <tbody>
                             @forelse($reports as $index => $report)
                             <tr>
-                                <td class="ps-4">{{ $index + 1 }}</td>
-                                <td>{{ \Carbon\Carbon::parse($report->date)->format('d/m/Y') }}</td>
+                                <td class="ps-4">{{ \Carbon\Carbon::parse($report->date)->format('d/m/Y') }}</td>
                                 <td class="fw-bold">{{ $report->nama_pelanggan }}</td>
                                 <td>{{ $report->alamat ?? '-' }}</td>
                                 <td>{{ $report->umur ?? '-' }} Thn</td>
-                                <td>{{ $report->lama_pembakaran ?? '-' }} Menit</td>
-                                <td>{{ $report->jumlah_solar ?? '0' }} L</td>
+                                <td>{{ $report->laporan->lama_pembakaran ?? '-' }} Menit</td>
+                                <td>{{ $report->laporan->jumlah_solar ?? '0' }} L</td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">Belum ada data laporan untuk {{ $selected_ruangan->nama }}.</td>
+                                <td colspan="6" class="text-center py-4 text-muted">Belum ada data laporan untuk {{ $selected_ruangan->nama }}.</td>
                             </tr>
                             @endforelse
                         </tbody>

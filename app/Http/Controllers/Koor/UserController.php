@@ -13,7 +13,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('role')->get();
+        $users = User::with('role')->orderBy('iduser', 'desc')->get();
         return view('users.koor.user.index', compact('users'));
     }
 
@@ -35,7 +35,6 @@ class UserController extends Controller
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'username' => explode('@', $request->email)[0], // Auto-generate username from email prefix
             'password' => Hash::make($request->password),
             'role_idrole' => $request->role_idrole,
         ]);

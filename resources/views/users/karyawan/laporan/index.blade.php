@@ -10,7 +10,7 @@
                 <div class="d-flex justify-content-between align-items-end pb-2 border-bottom border-2">
                     <div>
                         <h1 class="fs-3 mb-1">Laporan</h1>
-                        <p class="mb-0 text-muted small">Daftar rekapan laporan almarhum.</p>
+                        <p class="mb-0 text-muted small">Daftar rekapan laporan Jenazah.</p>
                     </div>
                     <a href="{{ route('karyawan.laporan.create') }}" class="btn btn-outline-dark btn-sm mb-1">
                         <i class="ti ti-plus me-1"></i> Tambah Laporan
@@ -38,11 +38,8 @@
                         <span class="fs-5 text-dark">{{ $jadwal->nama_pelanggan }}</span>
                     </div>
                     <div class="action-section d-flex gap-2">
-                        <a href="{{ route('karyawan.laporan.show', $jadwal->idreports) }}?download=1" target="_blank" class="btn-download px-3 py-1">
+                        <a href="{{ route('karyawan.laporan.show', $jadwal->id_jadwal) }}" class="btn-download px-3 py-1">
                             download
-                        </a>
-                        <a href="{{ route('karyawan.laporan.show', $jadwal->idreports) }}?print=1" target="_blank" class="btn-print px-4 py-1">
-                            print
                         </a>
                         <!-- Administrative actions (Edit/Delete) - subtle -->
                         <div class="dropdown ms-2">
@@ -50,9 +47,9 @@
                                 <i class="ti ti-dots-vertical"></i>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                                <li><a class="dropdown-item" href="{{ route('karyawan.laporan.edit', $jadwal->idreports) }}"><i class="ti ti-edit me-2"></i> Edit</a></li>
+                                <li><a class="dropdown-item" href="{{ route('karyawan.laporan.edit', $jadwal->id_jadwal) }}"><i class="ti ti-edit me-2"></i> Edit</a></li>
                                 <li>
-                                    <form action="{{ route('karyawan.laporan.destroy', $jadwal->idreports) }}" method="POST" onsubmit="return confirm('Hapus laporan ini?');">
+                                    <form action="{{ route('karyawan.laporan.destroy', $jadwal->id_jadwal) }}" method="POST" onsubmit="return confirm('Hapus laporan ini?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="dropdown-item text-danger"><i class="ti ti-trash me-2"></i> Hapus</button>

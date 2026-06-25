@@ -453,12 +453,6 @@
 
             <a href="#" class="forgot-link">Lupa Password?</a>
 
-            <!-- Register Link Footer -->
-            @if (Route::has('register'))
-                <div class="register-footer">
-                    <span>Belum punya akun? <a href="{{ route('register') }}">Daftar Sekarang</a></span>
-                </div>
-            @endif
         </div>
     </div>
 </div>

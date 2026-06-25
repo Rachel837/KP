@@ -35,8 +35,7 @@
                             <table class="table table-hover align-middle mb-0">
                                  <thead class="table-light">
                                     <tr>
-                                        <th class="ps-4">No</th>
-                                        <th>Nama Almarhum</th>
+                                        <th class="ps-4">Nama Jenazah</th>
                                         <th>Tanggal Kremasi</th>
                                         <th>Jam Awal</th>
                                         <th>Ruangan/Mesin</th>
@@ -47,8 +46,7 @@
                                 <tbody>
                                     @forelse($jadwals as $index => $jadwal)
                                     <tr class="hover-row">
-                                        <td class="ps-4 text-muted">{{ $index + 1 }}</td>
-                                        <td>
+                                        <td class="ps-4">
                                             <div class="fw-semibold text-dark">{{ $jadwal->nama_pelanggan }}</div>
                                             <div class="small text-muted">{{ $jadwal->umur ? $jadwal->umur . ' Tahun' : '' }} {{ $jadwal->alamat ? '| ' . $jadwal->alamat : '' }}</div>
                                         </td>
@@ -56,13 +54,13 @@
                                             <span class="text-dark">{{ \Carbon\Carbon::parse($jadwal->date)->translatedFormat('d F Y') }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-light text-dark border">{{ $jadwal->jam_awal }}</span>
+                                            <span class="badge bg-light text-dark border">{{ $jadwal->laporan->jam_awal ?? '-' }}</span>
                                         </td>
                                         <td>
                                             <span class="text-dark fw-medium">{{ $jadwal->ruangan->nama ?? '-' }}</span>
                                         </td>
                                         <td>
-                                            @if($jadwal->foto_abu || $jadwal->lama_pembakaran)
+                                            @if(($jadwal->picture && $jadwal->picture->foto_abu) || ($jadwal->laporan && $jadwal->laporan->lama_pembakaran))
                                                 <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1">Selesai</span>
                                             @else
                                                 <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2.5 py-1">Terjadwal</span>
@@ -70,10 +68,10 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center gap-2">
-                                                <a href="{{ route('karyawan.jadwal.edit', $jadwal->idreports) }}" class="btn btn-sm btn-warning text-white">
+                                                <a href="{{ route('karyawan.jadwal.edit', $jadwal->id_jadwal) }}" class="btn btn-sm btn-warning text-white">
                                                     <i class="ti ti-edit"></i> Edit
                                                 </a>
-                                                <form action="{{ route('karyawan.jadwal.destroy', $jadwal->idreports) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal ini?');">
+                                                <form action="{{ route('karyawan.jadwal.destroy', $jadwal->id_jadwal) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal ini?');">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger">
@@ -85,7 +83,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-5 text-muted">
+                                        <td colspan="6" class="text-center py-5 text-muted">
                                             <div class="mb-2"><i class="ti ti-calendar-off fs-1"></i></div>
                                             Belum ada data jadwal kremasi yang tersedia.
                                             <div class="mt-3">

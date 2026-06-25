@@ -31,8 +31,7 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="ps-4">No</th>
-                                <th>Nama Lengkap</th>
+                                <th class="ps-4">Nama Lengkap</th>
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th class="text-end pe-4">Aksi</th>
@@ -41,8 +40,7 @@
                         <tbody>
                             @forelse($users as $index => $user)
                             <tr>
-                                <td class="ps-4">{{ $index + 1 }}</td>
-                                <td>{{ $user->name }}</td>
+                                <td class="ps-4">{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
                                 <td><span class="badge bg-info text-capitalize">{{ $user->role->nama ?? '-' }}</span></td>
                                 <td class="text-end pe-4">
@@ -62,7 +60,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="text-center py-4">Belum ada data pengguna.</td>
+                                <td colspan="4" class="text-center py-4">Belum ada data pengguna.</td>
                             </tr>
                             @endforelse
                         </tbody>

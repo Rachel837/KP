@@ -15,9 +15,9 @@ class DashboardController extends Controller
         $startDate = Carbon::now()->startOfDay();
         $endDate = Carbon::now()->addDays(7)->endOfDay();
         
-        $jadwals = Jadwal::with(['user', 'ruangan', 'pelanggan'])
+        $jadwals = Jadwal::with(['user', 'ruangan', 'pelanggan', 'picture', 'laporan'])
             ->whereBetween('date', [$startDate, $endDate])
-            ->orderBy('date', 'asc')
+            ->orderBy('id_jadwal', 'desc')
             ->get();
             
         return view('users.karyawan.dashboard', compact('jadwals', 'startDate', 'endDate'));

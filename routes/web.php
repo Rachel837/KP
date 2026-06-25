@@ -14,10 +14,6 @@ Route::get('/', [GuestDashboardController::class, 'index'])->name('guest.dashboa
 Route::get('/home', function () {
     $role = auth()->user()->role->nama ?? '';
     
-    if ($role === 'super_admin' || $role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    }
-
     if ($role === 'koor') {
         return redirect()->route('karyawan.dashboard');
     }
@@ -50,6 +46,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/tv-show', [\App\Http\Controllers\TvShowController::class, 'index'])->name('tv.show');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -64,6 +61,7 @@ Route::middleware('auth')->group(function () {
     // Karyawan & Koor routes (Shared)
     Route::middleware('role:karyawan,koor')->prefix('karyawan')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Karyawan\DashboardController::class, 'index'])->name('karyawan.dashboard');
+        Route::get('/jadwal/booked-slots', [\App\Http\Controllers\Karyawan\JadwalController::class, 'getBookedSlots'])->name('karyawan.jadwal.booked-slots');
         Route::resource('/laporan', \App\Http\Controllers\Karyawan\LaporanController::class)->names('karyawan.laporan');
         Route::resource('/jadwal', \App\Http\Controllers\Karyawan\JadwalController::class)->names('karyawan.jadwal');
     });

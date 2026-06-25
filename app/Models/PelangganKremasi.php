@@ -11,15 +11,45 @@ class PelangganKremasi extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'nama',
-        'usia',
+        'nama_jenazah',
+        'usia_jenazah',
         'penanggung_jawab',
-        'penannggung_jawab',
         'no_telepon',
-        'tanggal_lahir',
-        'tempat_lahir',
-        'berat_badan'
+        'tanggal_lahir_jenazah',
+        'tempat_lahir_jenazah',
+        'berat_badan',
+        'alamat_jenazah'
     ];
+
+    public function getTanggalLahirAttribute()
+    {
+        return $this->tanggal_lahir_jenazah;
+    }
+
+    public function getTempatLahirAttribute()
+    {
+        return $this->tempat_lahir_jenazah;
+    }
+
+    public function getAlamatAttribute()
+    {
+        return $this->alamat_jenazah;
+    }
+
+    public function getNamaAttribute()
+    {
+        return $this->nama_jenazah;
+    }
+
+    public function getUsiaAttribute()
+    {
+        return $this->usia_jenazah;
+    }
+
+    public function getPenannggungJawabAttribute()
+    {
+        return $this->penanggung_jawab;
+    }
 
     public function jadwals()
     {

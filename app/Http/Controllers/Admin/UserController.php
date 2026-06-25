@@ -13,7 +13,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('role')->get();
+        $users = User::with('role')->orderBy('iduser', 'desc')->get();
         return view('users.karyawan.index', compact('users'));
     }
 
@@ -28,7 +28,6 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:user',
-            'username' => 'required|string|max:255|unique:user',
             'password' => ['required', 'confirmed', Password::defaults()],
             'role_idrole' => 'required|exists:role,idrole'
         ]);
@@ -36,7 +35,6 @@ class UserController extends Controller
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'username' => $request->username,
             'password' => Hash::make($request->password),
             'role_idrole' => $request->role_idrole,
         ]);
@@ -58,14 +56,12 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:user,email,' . $user->iduser . ',iduser',
-            'username' => 'required|string|max:255|unique:user,username,' . $user->iduser . ',iduser',
             'role_idrole' => 'required|exists:role,idrole'
         ]);
 
         $data = [
             'name' => $request->name,
             'email' => $request->email,
-            'username' => $request->username,
             'role_idrole' => $request->role_idrole,
         ];
 

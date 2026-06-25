@@ -24,10 +24,6 @@ class Role
             return $next($request);
         }
 
-        // Jika middleware 'role:admin' bisa juga diakses 'super_admin', bisa ditambahkan di sini
-        if (in_array('super_admin', $roles) && $user->role && $user->role->nama === 'admin') {
-            return $next($request); 
-        }
 
         abort(403, 'Unauthorized access - Invalid Role.');
     }
