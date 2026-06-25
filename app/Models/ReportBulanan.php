@@ -19,7 +19,9 @@ class ReportBulanan extends Model
         'total_pemakaian_listrik',
         'biaya_solar',
         'biaya_listrik',
-        'total_biaya'
+        'total_biaya',
+        'rata_rata_pemakaian_solar',
+        'rata_rata_pemakaian_listrik'
     ];
 
     public function ruangan()

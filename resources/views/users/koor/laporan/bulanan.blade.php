@@ -132,7 +132,9 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="ps-4">Total Pemakaian Solar</th>
+                                <th>Rata-rata Pemakaian Solar</th>
                                 <th>Total Pemakaian Listrik</th>
+                                <th>Rata-rata Pemakaian Listrik</th>
                                 <th>Biaya Solar</th>
                                 <th>Biaya Listrik</th>
                                 <th>Total Biaya</th>
@@ -144,8 +146,14 @@
                                 <td class="ps-4 fw-bold text-primary" style="font-size: 15px;">
                                     {{ number_format($sum->total_pemakaian_solar, 2) }} Liter
                                 </td>
+                                <td class="fw-bold text-info" style="font-size: 15px;">
+                                    {{ number_format($sum->rata_rata_pemakaian_solar, 2) }} Liter
+                                </td>
                                 <td class="fw-bold text-warning" style="font-size: 15px;">
                                     {{ number_format($sum->total_pemakaian_listrik, 2) }} kWH
+                                </td>
+                                <td class="fw-bold text-secondary" style="font-size: 15px;">
+                                    {{ number_format($sum->rata_rata_pemakaian_listrik, 2) }} kWH
                                 </td>
                                 <td class="fw-bold text-success" style="font-size: 15px;">
                                     Rp {{ number_format($sum->biaya_solar, 0, ',', '.') }}

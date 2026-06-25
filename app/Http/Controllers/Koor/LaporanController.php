@@ -51,11 +51,13 @@ class LaporanController extends Controller
                             'bulan' => $month,
                             'tahun' => $year,
                             'total_solar' => 0,
-                            'total_listrik' => 0
+                            'total_listrik' => 0,
+                            'count' => 0
                         ];
                     }
                     $monthlyData[$key]['total_solar'] += (float) ($report->laporan->jumlah_solar ?? 0);
                     $monthlyData[$key]['total_listrik'] += (float) ($report->laporan->pemakaian_listrik ?? 0);
+                    $monthlyData[$key]['count']++;
                 }
             }
 
@@ -64,6 +66,8 @@ class LaporanController extends Controller
                 $biayaSolar = $data['total_solar'] * 14150;
                 $biayaListrik = $data['total_listrik'] * 1500;
                 $totalBiaya = $biayaSolar + $biayaListrik;
+                $avgSolar = $data['count'] > 0 ? $data['total_solar'] / $data['count'] : 0;
+                $avgListrik = $data['count'] > 0 ? $data['total_listrik'] / $data['count'] : 0;
 
                 ReportBulanan::updateOrCreate(
                     [
@@ -76,7 +80,9 @@ class LaporanController extends Controller
                         'total_pemakaian_listrik' => $data['total_listrik'],
                         'biaya_solar' => $biayaSolar,
                         'biaya_listrik' => $biayaListrik,
-                        'total_biaya' => $totalBiaya
+                        'total_biaya' => $totalBiaya,
+                        'rata_rata_pemakaian_solar' => $avgSolar,
+                        'rata_rata_pemakaian_listrik' => $avgListrik
                     ]
                 );
             }
