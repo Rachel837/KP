@@ -131,8 +131,8 @@ class JadwalController extends Controller
 
         if ($request->status === 'Selesai') {
             $scheduleTimeStr = $request->jam_awal ?? '00:00:00';
-            $scheduleDateTime = \Carbon\Carbon::parse($request->date . ' ' . $scheduleTimeStr);
-            if (now()->lessThan($scheduleDateTime)) {
+            $scheduleDateTime = \Carbon\Carbon::parse($request->date . ' ' . $scheduleTimeStr, 'Asia/Jakarta');
+            if (now('Asia/Jakarta')->lessThan($scheduleDateTime)) {
                 return back()->withErrors(['status' => 'Status tidak dapat diubah menjadi Selesai sebelum jadwal kremasi (' . $scheduleDateTime->translatedFormat('d M Y, H:i') . ' WIB) terlewati.'])->withInput();
             }
         }

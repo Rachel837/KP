@@ -124,8 +124,8 @@
                                     @php
                                         $isSelesai = ($jadwal->picture && $jadwal->picture->foto_abu) || ($jadwal->laporan && $jadwal->laporan->lama_pembakaran);
                                         $scheduleTimeStr = ($jadwal->laporan && $jadwal->laporan->jam_awal) ? $jadwal->laporan->jam_awal : '00:00:00';
-                                        $scheduleDateTime = \Carbon\Carbon::parse($jadwal->date . ' ' . $scheduleTimeStr);
-                                        $canComplete = now()->greaterThanOrEqualTo($scheduleDateTime);
+                                        $scheduleDateTime = \Carbon\Carbon::parse($jadwal->date . ' ' . $scheduleTimeStr, 'Asia/Jakarta');
+                                        $canComplete = now('Asia/Jakarta')->greaterThanOrEqualTo($scheduleDateTime);
                                     @endphp
                                     <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
                                         <option value="Terjadwal" {{ !$isSelesai ? 'selected' : '' }}>Terjadwal</option>
